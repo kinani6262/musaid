@@ -4,7 +4,7 @@
    المخزّنة، فتظهر تعديلاتك فورًا)، ويُظهر الإشعارات على الهاتف
    ========================================================= */
 
-const CACHE = 'musaid-v2';
+const CACHE = 'musaid-v3';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/core.js', 'js/ui.js', 'js/smart.js', 'js/demo.js', 'js/schedule.js', 'js/sync-config.js', 'js/sync.js', 'js/app.js',
@@ -14,7 +14,7 @@ const SHELL = [
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
@@ -33,8 +33,9 @@ self.addEventListener('fetch', e => {
     return;
   }
   if (req.method !== 'GET' || url.origin !== location.origin) return;
+  // no-cache: يسأل الخادم دائمًا عن أحدث نسخة، فتصل تحديثات التصميم فورًا لا بعد مهلة ذاكرة المتصفح
   e.respondWith(
-    fetch(req).then(res => {
+    fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' }).then(res => {
       if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
       return res;
     }).catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || caches.match('index.html')))

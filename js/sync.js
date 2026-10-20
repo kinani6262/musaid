@@ -65,6 +65,7 @@ function loadScript(src) {
   return new Promise((res, rej) => {
     const s = document.createElement('script');
     s.src = src;
+    s.crossOrigin = 'anonymous';   // ليتمكن عامل الخدمة من تخزينها للعمل دون إنترنت
     s.onload = res;
     s.onerror = () => { s.remove(); rej(new Error(src)); };
     document.head.appendChild(s);
