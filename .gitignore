@@ -1,3 +1,4 @@
 .claude/
 serve.ps1
 *.bat
+musaid-restore*.json
