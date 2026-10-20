@@ -1064,3 +1064,12 @@ input[type=date], input[type=time] { direction: rtl; }
   .wgrid td, .wgrid tr.gdaily > * { background: #f1f1f4 !important; box-shadow: none !important; }
   .gchip { background: #fff !important; }
 }
+
+/* ---------- المزامنة ---------- */
+#sync-pill:empty { display: none; }
+.sync-btn { color: var(--c); }
+.sync-btn .sync-dot {
+  position: absolute; top: 8px; inset-inline-end: 8px;
+  width: 8px; height: 8px; border-radius: 99px; background: var(--c);
+  box-shadow: 0 0 0 2px var(--surface);
+}

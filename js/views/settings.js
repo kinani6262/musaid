@@ -25,7 +25,7 @@ App.views.settings = {
     const pt = Prayer.list(D.today());
 
     return `
-      <div class="page-h"><div><h2>${ic('settings', 'ic-lg')} الإعدادات</h2><div class="sub">خصّص التطبيق كما يناسبك — كل البيانات محفوظة على جهازك فقط</div></div></div>
+      <div class="page-h"><div><h2>${ic('settings', 'ic-lg')} الإعدادات</h2><div class="sub">خصّص التطبيق كما يناسبك — ${App.sync.user ? 'بياناتك متزامنة بين أجهزتك' : 'كل البيانات محفوظة على جهازك فقط'}</div></div></div>
       <div class="grid g-2">
         <div class="col" style="gap:16px">
           <div class="card">
@@ -58,6 +58,8 @@ App.views.settings = {
             ${row('صوت التنبيه', '', sw('sound', st.sound))}
             <div class="tiny muted mt-s">ℹ️ تعمل التنبيهات ما دام التطبيق مفتوحًا. لتنبيهات على هاتفك حتى والتطبيق مغلق، استعمل «الربط مع الهاتف» بالأسفل.</div>
           </div>
+
+          ${App.sync.cardHtml()}
 
           <div class="card">
             <div class="card-t mb">📱 الربط مع الهاتف</div>
@@ -127,7 +129,7 @@ App.views.settings = {
 
           <div class="card">
             <div class="card-t mb">💾 البيانات والنسخ الاحتياطي</div>
-            <div class="small text-2 mb">بياناتك محفوظة في متصفحك على هذا الجهاز فقط. صدّر نسخة احتياطية بانتظام، ويمكنك استيرادها على جهاز آخر.</div>
+            <div class="small text-2 mb">${App.sync.user ? 'بياناتك محفوظة في متصفحك وفي حسابك للمزامنة. النسخة الاحتياطية احتياط إضافي.' : 'بياناتك محفوظة في متصفحك على هذا الجهاز فقط. صدّر نسخة احتياطية بانتظام، ويمكنك استيرادها على جهاز آخر.'}</div>
             <div class="flex flex-wrap">
               <button class="btn btn-sm btn-primary" data-act="backup-export">${ic('download')} تصدير نسخة احتياطية</button>
               <button class="btn btn-sm" data-act="backup-import">${ic('upload')} استيراد نسخة</button>

@@ -146,6 +146,7 @@ App.onboard = function () {
       { name: 'demo', label: 'استبدل جدولي ببيانات تجريبية للاستكشاف', type: 'switch', hint: 'جدولك الأسبوعي مضاف مسبقًا، فاترك هذا الخيار مطفأً. ويمكنك إعادة تحميل الجدول من الإعدادات' },
     ],
     submit: 'لنبدأ — بسم الله',
+    extraBtn: App.sync.enabled() ? '<button type="button" class="btn btn-ghost" data-act="sync-login-onb">☁️ لدي حساب مزامنة</button>' : '',
     onSubmit(v) {
       const st = S();
       st.name = v.name;

@@ -4,10 +4,10 @@
    المخزّنة، فتظهر تعديلاتك فورًا)، ويُظهر الإشعارات على الهاتف
    ========================================================= */
 
-const CACHE = 'musaid-v1';
+const CACHE = 'musaid-v2';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
-  'js/core.js', 'js/ui.js', 'js/smart.js', 'js/demo.js', 'js/schedule.js', 'js/app.js',
+  'js/core.js', 'js/ui.js', 'js/smart.js', 'js/demo.js', 'js/schedule.js', 'js/sync-config.js', 'js/sync.js', 'js/app.js',
   'js/views/dashboard.js', 'js/views/planner.js', 'js/views/calendar.js', 'js/views/finance.js', 'js/views/subscriptions.js',
   'js/views/habits.js', 'js/views/trackers.js', 'js/views/study.js', 'js/views/life.js', 'js/views/settings.js',
   'icons/icon-192.png', 'icons/icon-512.png',
@@ -23,7 +23,16 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const req = e.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  const url = new URL(req.url);
+  // مكتبة Firebase للمزامنة: ثابتة لكل إصدار، فتُخزَّن ليعمل التطبيق دون إنترنت
+  if (req.method === 'GET' && url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/')) {
+    e.respondWith(caches.match(req).then(r => r || fetch(req).then(res => {
+      if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
+      return res;
+    })));
+    return;
+  }
+  if (req.method !== 'GET' || url.origin !== location.origin) return;
   e.respondWith(
     fetch(req).then(res => {
       if (res.ok) { const copy = res.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
