@@ -87,27 +87,27 @@ App.views.trackers = {
           </div>
           ${App.ring(pr.pct, { size: 66, stroke: 7, label: pr.pct + '%', color: t.color })}
           <div class="flex" style="gap:2px">
-            ${ti !== null && ti >= 0 && ti < t.cells ? `<button class="btn btn-sm btn-soft" data-act="trk-today" data-id="${t.id}" data-tip="تعليم كل خانات اليوم كمنجزة">✓ اليوم كاملًا</button>` : ''}
+            ${ti !== null && ti >= 0 && ti < t.cells ? `<button class="btn btn-sm btn-soft" data-act="trk-today" data-id="${t.id}" data-tip="تعليم كل خانات اليوم منجزةً">✓ اليوم كاملًا</button>` : ''}
             <button class="icon-btn sm" data-act="trk-edit" data-id="${t.id}" data-tip="تعديل">${ic('edit')}</button>
           </div>
         </div>
         ${t.note ? `<div class="small muted mb">💭 ${esc(t.note)}</div>` : ''}
         ${grid}
-        <div class="tiny muted mt-s">اضغط على الخانة: ${t.tri ? 'مرة = ✓ تم، مرتين = ✗ فاتت، ثلاثًا = تفريغ' : 'للتعليم كمنجزة، ومرة أخرى للتفريغ'}</div>
+        <div class="tiny muted mt-s">اضغط على الخانة: ${t.tri ? 'مرة = ✓ تم، مرتين = ✗ فاتت، ثلاثًا = تفريغ' : 'للتعليم بالإنجاز، ومرة أخرى للتفريغ'}</div>
       </div>`;
     };
 
     return `
       <div class="page-h">
-        <div><h2>${ic('tracker', 'ic-lg')} المتابعة اليومية</h2><div class="sub">حدّد عدد الخانات (الأيام) وتابع التزامك خانة بخانة</div></div>
+        <div><h2>${ic('tracker', 'ic-lg')} المتابعة اليومية</h2><div class="sub hide-mobile">حدّد عدد الخانات (الأيام) وتابع التزامك خانة بخانة</div></div>
         <div class="actions"><button class="btn btn-sm btn-primary" data-act="trk-new">${ic('plus')} متابعة جديدة</button></div>
       </div>
-      ${list.length ? list.map(card).join('') : `<div class="card mb">${App.empty('🗂️', 'لا متابعات بعد', 'أنشئ متابعة مثل «الصلاة في المسجد 40 يومًا» وحدد عدد الخانات كما تشاء')}</div>`}
+      ${list.length ? list.map(card).join('') : `<div class="card mb">${App.empty('🗂️', 'لا متابعات بعد', 'أنشئ متابعة مثل «الصلاة في المسجد 40 يومًا» وحدّد عدد الخانات كما تشاء')}</div>`}
       <div class="card">
         <div class="card-h"><div class="card-t">${ic('sparkles')} قوالب جاهزة</div><span class="small muted">يمكنك تعديل عدد الخانات بعد الإضافة</span></div>
         <div class="tpl-grid">${TRACKER_TEMPLATES.map((t, i) => `<button class="tpl" data-act="trk-tpl" data-i="${i}"><span class="te">${t.icon}</span><span>${esc(t.name)}<br><span class="tiny muted">${t.cells} خانة${t.rows.length ? ' × ' + t.rows.length : ''}</span></span></button>`).join('')}</div>
       </div>
-      ${archived.length ? `<div class="card mt"><div class="card-h"><div class="card-t">🗄️ متابعات مؤرشفة</div></div>${archived.map(t => `<div class="trow"><span>${t.icon}</span><div class="grow">${esc(t.name)} <span class="tiny muted">· ${Trackers.progress(t).pct}%</span></div><button class="btn btn-sm btn-ghost" data-act="trk-unarchive" data-id="${t.id}">استعادة</button></div>`).join('')}</div>` : ''}`;
+      ${archived.length ? `<div class="card mt"><div class="card-h"><div class="card-t">متابعات مؤرشفة</div></div>${archived.map(t => `<div class="trow"><span>${t.icon}</span><div class="grow">${esc(t.name)} <span class="tiny muted">· ${Trackers.progress(t).pct}%</span></div><button class="btn btn-sm btn-ghost" data-act="trk-unarchive" data-id="${t.id}">استعادة</button></div>`).join('')}</div>` : ''}`;
   },
   after() {
     $$('.tscroll').forEach(w => {
@@ -168,7 +168,7 @@ App.trackerForm = function (t = null, preset = {}) {
       { type: 'html', html: `<div class="flex flex-wrap mb" style="gap:6px;margin-top:-6px"><span class="tiny muted">اختيار سريع:</span>${[7, 14, 21, 30, 40, 66, 100].map(n => `<button type="button" class="dp" data-cells="${n}">${n}</button>`).join('')}</div>` },
       { name: 'rowsText', label: 'بنود متعددة لكل يوم (اختياري)', placeholder: 'مثال: الفجر، الظهر، العصر، المغرب، العشاء', hint: 'افصل بينها بفاصلة. اتركه فارغًا لخانة واحدة في اليوم.' },
       { name: 'dated', label: 'كل خانة تمثّل يومًا', type: 'switch', hint: 'عطّلها إن كانت الخانات عدًّا حرًّا غير مرتبط بالأيام (مثل عدد الكتب)' },
-      { name: 'tri', label: 'السماح بتعليم الخانة كـ«فائتة» ✗', type: 'switch' },
+      { name: 'tri', label: 'السماح بتعليم الخانة «فائتة» ✗', type: 'switch' },
       { name: 'icon', label: 'الرمز', type: 'emoji' },
       { name: 'color', label: 'اللون', type: 'color' },
       { name: 'note', label: 'نيّة أو ملاحظة تحفيزية', type: 'textarea', rows: 2 },
@@ -193,6 +193,6 @@ App.trackerForm = function (t = null, preset = {}) {
   if (t) setTimeout(() => {
     const a = $('#trk-archive'), r = $('#trk-restart');
     a && a.addEventListener('click', () => { App.closeTopModal(); App.update(s => { byId(s.trackers, t.id).archived = true; }); App.toast('أُرشفت المتابعة', { icon: '🗄️' }); });
-    r && r.addEventListener('click', () => App.confirm('سيتم مسح كل الخانات والبدء من اليوم. متابعة؟', () => { App.closeAllModals(); App.withUndo('أُعيد بدء المتابعة', s => { const x = byId(s.trackers, t.id); x.log = {}; x.start = D.today(); }); }));
+    r && r.addEventListener('click', () => App.confirm('ستُمسح كل الخانات ويبدأ العدّ من اليوم. متابعة؟', () => { App.closeAllModals(); App.withUndo('أُعيد بدء المتابعة', s => { const x = byId(s.trackers, t.id); x.log = {}; x.start = D.today(); }); }));
   }, 0);
 };

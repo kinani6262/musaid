@@ -5,7 +5,7 @@
    ومنها ما يصل من خادم التنبيهات والتطبيق مغلق (push)
    ========================================================= */
 
-const CACHE = 'musaid-v4';
+const CACHE = 'musaid-v5';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/style.css',
   'js/core.js', 'js/ui.js', 'js/smart.js', 'js/demo.js', 'js/schedule.js', 'js/sync-config.js', 'js/sync.js', 'js/push-config.js', 'js/push.js', 'js/app.js',

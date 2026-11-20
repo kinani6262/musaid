@@ -31,7 +31,8 @@ App.views.day = {
       const items = timed.filter(t => Number(t.time.slice(0, 2)) === h);
       const pr = prayers.filter(x => Math.floor(x.min / 60) === h);
       const cls = isToday ? (h === nowH ? 'now' : h < nowH ? 'past' : '') : (k < today ? 'past' : '');
-      rows += `<tr class="${cls}">
+      // على الهاتف تُطوى الساعات الفارغة فيقصر الجدول (الإضافة من زر +)
+      rows += `<tr class="${cls} ${!items.length && !pr.length && !(isToday && h === nowH) ? 'empty-h' : ''}">
         <td class="hour">${D.hourLabel(h)}${isToday && h === nowH ? '<span class="now-badge">الآن</span>' : ''}</td>
         <td><div class="slot" data-act="task-new" data-date="${k}" data-time="${pad2(h)}:00" data-drop-date="${k}" data-drop-time="${h}">${pr.map(x => `<span class="pmark">🕌 ${x.name} ${D.time(x.time)}</span>`).join('')}${items.map(t => T.chip(t, k, { conflict: conf.has(t.id) })).join('')}</div></td>
       </tr>`;
@@ -58,17 +59,16 @@ App.views.day = {
         </div>
       </div>
 
-      <div class="grid g-4 keep-2 mb">
-        <div class="card stat"><div class="si">📋</div><div class="grow"><div class="sv">${st.done}/${st.total}</div><div class="sl">مهام منجزة</div>${App.bar(st.pct, '', 'thin')}</div></div>
-        <div class="card stat"><div class="si" style="--c:#06b6d4">⏱️</div><div><div class="sv">${durText(planned)}</div><div class="sl">وقت مخطّط</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#22c55e">🌿</div><div><div class="sv">${durText(free)}</div><div class="sl">وقت غير مخطّط</div></div></div>
-        <div class="card stat"><div class="si" style="--c:${conf.size ? 'var(--bad)' : 'var(--good)'}">${conf.size ? '⚠️' : '✅'}</div><div><div class="sv">${conf.size ? conf.size : 'لا'}</div><div class="sl">${conf.size ? 'مهام متعارضة الأوقات' : 'تعارضات في الجدول'}</div></div></div>
+      <div class="card sumbar mb">
+        <div class="sb-i grow"><b>${st.done}/${st.total}</b> مهام منجزة${App.bar(st.pct, '', 'thin')}</div>
+        <div class="sb-i"><b>${durText(planned)}</b> مخطّط</div>
+        ${conf.size ? `<div class="sb-i bad"><b>${conf.size}</b> متعارضة الأوقات</div>` : ''}
       </div>
 
       <div class="layout-side">
         <div class="tbl-wrap">
           <table class="tbl daytbl">
-            <thead><tr><th>الوقت</th><th>المهام والأنشطة <span class="muted tiny" style="font-weight:400">— اضغط على أي خانة لإضافة مهمة، أو اسحب المهام بين الساعات</span></th></tr></thead>
+            <thead><tr><th>الوقت</th><th>المهام والأنشطة <span class="muted tiny hide-mobile" style="font-weight:400">— اضغط على أي خانة لإضافة مهمة، أو اسحب المهام بين الساعات</span></th></tr></thead>
             <tbody>${rows}</tbody>
           </table>
         </div>
@@ -333,11 +333,10 @@ App.views.week = {
         </div>
       </div>
 
-      <div class="grid g-4 keep-2 mb">
-        <div class="card stat">${App.ring(pct(totD, totT), { size: 50, stroke: 6, label: pct(totD, totT) + '%' })}<div><div class="sv">${totD}/${totT}</div><div class="sl">مهام الأسبوع</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#06b6d4">⏱️</div><div><div class="sv">${hoursText(totMin)} س</div><div class="sl">وقت مخطّط</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#f97316">📌</div><div><div class="sv">${busiest && busiest.min ? D.dayName(busiest.k) : '—'}</div><div class="sl">أكثر أيامك انشغالًا</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#ec4899">🎯</div><div><div class="sv">${goals.filter(g => g.done).length}/${goals.length}</div><div class="sl">أهداف الأسبوع</div></div></div>
+      <div class="card sumbar mb">
+        <div class="sb-i grow"><b>${totD}/${totT}</b> مهام الأسبوع${App.bar(pct(totD, totT), '', 'thin')}</div>
+        <div class="sb-i"><b>${hoursText(totMin)} س</b> مخطّطة</div>
+        ${goals.length ? `<div class="sb-i"><b>${goals.filter(g => g.done).length}/${goals.length}</b> أهداف الأسبوع</div>` : ''}
       </div>
 
       ${layout === 'grid' ? weekGrid(days, lists, conf) : `<div class="tbl-wrap mb"><table class="tbl wk"><thead>${head}</thead><tbody>${body}</tbody></table></div>`}
@@ -441,7 +440,7 @@ App.views.month = {
     return `
       <div class="page-h">
         <div>
-          <h2>${ic('month', 'ic-lg')} خطة شهر ${D.monthName(mk)}</h2>
+          <h2 class="keep">${ic('month', 'ic-lg')} خطة شهر ${D.monthName(mk)}</h2>
           <div class="sub">${S().showHijri ? D.hijriMonth(mk + '-01') + ' – ' + D.hijriMonth(mk + '-' + pad2(md)) + ' · ' : ''}${isCur ? `بقي ${daysAr(daysLeft)} على نهاية الشهر` : ''}</div>
         </div>
         <div class="actions">
@@ -461,14 +460,14 @@ App.views.month = {
           <div class="text-2" style="cursor:pointer" data-act="mp-word" data-mk="${mk}">${plan.word ? '«' + esc(plan.word) + '»' : '<span class="muted">مثال: «خطوة كل يوم»</span>'}</div>
         </div>
         <div class="card">
-          <div class="card-h" style="margin-bottom:8px"><div class="card-t">⭐ أولويات الشهر الثلاث</div></div>
+          <div class="card-h" style="margin-bottom:8px"><div class="card-t">أولويات الشهر الثلاث</div></div>
           ${top.map((t, i) => t ? `<div class="ms ${t.done ? 'done' : ''}">${App.chk(t.done, 'mp-top-toggle', `data-mk="${mk}" data-i="${i}"`)}<span class="grow" style="cursor:pointer" data-act="mp-top" data-mk="${mk}" data-i="${i}">${esc(t.text)}</span></div>`
             : `<div class="ms"><span class="chk" style="opacity:.4"></span><span class="grow muted" style="cursor:pointer" data-act="mp-top" data-mk="${mk}" data-i="${i}">الأولوية ${['الأولى', 'الثانية', 'الثالثة'][i]}…</span></div>`).join('')}
         </div>
         <div class="card stat" style="justify-content:center">
           ${App.ring(pct(doneItems, allItems.length), { size: 92, stroke: 9, label: pct(doneItems, allItems.length) + '%', sub: 'إنجاز الخطة' })}
           <div class="col" style="gap:4px">
-            <div class="small"><b>${doneItems}</b> <span class="muted">من</span> <b>${allItems.length}</b> <span class="muted">بندًا</span></div>
+            <div class="small"><span class="muted">أُنجز</span> <b>${doneItems}</b> <span class="muted">من</span> <b>${allItems.length}</b></div>
             ${isCur ? `<div class="small muted">الأسبوع الحالي: ${curW}</div>${App.bar(pct(D.day(today), md), '', 'thin')}<div class="tiny muted">مضى ${pct(D.day(today), md)}% من الشهر</div>` : ''}
           </div>
         </div>
@@ -490,12 +489,12 @@ App.views.month = {
         <div class="card">
           <div class="card-h"><div class="card-t"><span class="ti" style="--c:#f59e0b">${ic('trend')}</span> أرقام الشهر</div></div>
           <div class="grid g-2 keep-2" style="gap:12px">
-            <div class="stat"><div class="si">✅</div><div><div class="sv">${doneTasks}</div><div class="sl">مهمة منجزة</div></div></div>
-            <div class="stat"><div class="si" style="--c:#f97316">🔥</div><div><div class="sv">${pct(habitDone, habitDue)}%</div><div class="sl">التزام بالعادات</div></div></div>
-            <div class="stat"><div class="si" style="--c:#22c55e">💸</div><div><div class="sv">${money(spent, false)}</div><div class="sl">إجمالي المصروف</div></div></div>
-            <div class="stat"><div class="si" style="--c:#a855f7">🎓</div><div><div class="sv">${hoursText(studyMin)}</div><div class="sl">ساعة دراسة</div></div></div>
-            <div class="stat"><div class="si" style="--c:#eab308">📔</div><div><div class="sv">${jEntries.length}</div><div class="sl">تدوينة يومية</div></div></div>
-            <div class="stat"><div class="si" style="--c:#ec4899">${avgMood ? MOODS[Math.round(avgMood) - 1].e : '🙂'}</div><div><div class="sv">${avgMood ? avgMood.toFixed(1) : '—'}</div><div class="sl">متوسط المزاج</div></div></div>
+            <div class="stat"><div><div class="sv">${doneTasks}</div><div class="sl">مهمة منجزة</div></div></div>
+            <div class="stat"><div><div class="sv">${pct(habitDone, habitDue)}%</div><div class="sl">التزام بالعادات</div></div></div>
+            <div class="stat"><div><div class="sv">${money(spent, false)}</div><div class="sl">إجمالي المصروف</div></div></div>
+            <div class="stat"><div><div class="sv">${hoursText(studyMin)}</div><div class="sl">ساعة دراسة</div></div></div>
+            <div class="stat"><div><div class="sv">${jEntries.length}</div><div class="sl">تدوينة يومية</div></div></div>
+            <div class="stat"><div><div class="sv">${avgMood ? avgMood.toFixed(1) : '—'}</div><div class="sl">متوسط المزاج</div></div></div>
           </div>
         </div>
       </div>`;

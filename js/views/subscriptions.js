@@ -76,26 +76,26 @@ App.views.subs = {
 
     return `
       <div class="page-h">
-        <div><h2>${ic('repeat', 'ic-lg')} الاشتراكات</h2><div class="sub">تابع اشتراكاتك وتجديداتها، ولا تدفع لشيء لا تستخدمه</div></div>
+        <div><h2>${ic('repeat', 'ic-lg')} الاشتراكات</h2><div class="sub hide-mobile">تابع اشتراكاتك وتجديداتها، ولا تدفع لشيء لا تستخدمه</div></div>
         <div class="actions"><button class="btn btn-sm btn-primary" data-act="sub-new">${ic('plus')} اشتراك</button></div>
       </div>
       <div class="grid g-4 keep-2 mb">
-        <div class="card stat"><div class="si" style="--c:#f43f5e">📆</div><div><div class="sv">${money(monthly, false)}</div><div class="sl">التكلفة الشهرية (${S().currency})</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#f97316">🗓️</div><div><div class="sv">${money(monthly * 12, false)}</div><div class="sl">التكلفة السنوية</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#22c55e">✅</div><div><div class="sv">${active.length}</div><div class="sl">اشتراكات فعّالة${all.length > active.length ? ` · ${all.length - active.length} موقوفة` : ''}</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#6366f1">⏭️</div><div class="grow"><div class="sv ellipsis" style="font-size:1.1rem">${next ? esc(next.name) : '—'}</div><div class="sl">${next ? 'التجديد القادم ' + D.rel(next.next) : 'لا تجديدات'}</div></div></div>
+        <div class="card stat"><div><div class="sv">${money(monthly, false)}</div><div class="sl">التكلفة الشهرية (${S().currency})</div></div></div>
+        <div class="card stat"><div><div class="sv">${money(monthly * 12, false)}</div><div class="sl">التكلفة السنوية</div></div></div>
+        <div class="card stat"><div><div class="sv">${active.length}</div><div class="sl">اشتراكات فعّالة${all.length > active.length ? ` · ${all.length - active.length} موقوفة` : ''}</div></div></div>
+        <div class="card stat"><div class="grow"><div class="sv ellipsis" style="font-size:1.1rem">${next ? esc(next.name) : '—'}</div><div class="sl">${next ? 'التجديد القادم ' + D.rel(next.next) : 'لا تجديدات'}</div></div></div>
       </div>
       ${low.length ? `<div class="insight mb" style="--c:var(--warn);cursor:default"><span class="ie">💡</span><div><div class="it">لديك ${low.length} ${low.length === 1 ? 'اشتراك نادر الاستخدام' : 'اشتراكات نادرة الاستخدام'} (${low.map(x => esc(x.name)).join('، ')})</div><div class="is">إلغاؤها يوفّر عليك نحو ${money(Math.round(lowSave))} سنويًا</div></div></div>` : ''}
       <div class="layout-side">
         <div>${all.length ? `<div class="grid g-auto">${cards}</div>` : `<div class="card">${App.empty('🔁', 'لا اشتراكات بعد', 'أضف اشتراكاتك (بث، تخزين سحابي، نادي رياضي، باقة جوال...) وسأذكّرك قبل كل تجديد', `<button class="btn btn-primary btn-sm" data-act="sub-new">${ic('plus')} أضف اشتراكًا</button>`)}</div>`}</div>
         <div class="col" style="gap:16px">
           <div class="card">
-            <div class="card-h"><div class="card-t">📅 تجديدات الثلاثين يومًا القادمة</div></div>
+            <div class="card-h"><div class="card-t">تجديدات الثلاثين يومًا القادمة</div></div>
             ${upcoming.length ? upcoming.map(u => `<div class="trow"><span class="avatar" style="--c:${u.x.color};width:30px;height:30px;font-size:.8rem;border-radius:9px">${esc(u.x.name.charAt(0))}</span><div class="grow"><div class="small bold">${esc(u.x.name)}</div><div class="tiny muted">${D.rel(u.k)} · ${D.short(u.k)}</div></div><span class="small tnum bold">${money(u.x.amount)}</span></div>`).join('')
               + `<div class="flex between mt-s small"><span class="muted">الإجمالي</span><b>${money(sum(upcoming, u => u.x.amount))}</b></div>` : `<div class="muted small">لا تجديدات خلال الشهر القادم.</div>`}
           </div>
           <div class="card">
-            <div class="card-h"><div class="card-t">🍩 التكلفة الشهرية حسب الفئة</div></div>
+            <div class="card-h"><div class="card-t">التكلفة الشهرية حسب الفئة</div></div>
             ${App.donut(Object.entries(byCat).map(([c, v]) => ({ label: Subs.catLabel(c), value: Math.round(v * 100) / 100 })), { size: 140, thick: 18, center: money(monthly, false), centerSub: 'شهريًا' })}
           </div>
         </div>

@@ -181,8 +181,8 @@ App.views.dashboard = {
 
     return `${hero}${stats}
       <div class="layout-main mt">
-        <div class="col" style="gap:16px">${tasksCard}${habitsCard}${trackersCard}</div>
-        <div class="col" style="gap:16px">${prayerCard}${insightsCard}${upCard}${waterCard}</div>
+        <div class="col" style="gap:16px">${tasksCard}${isHidden('habits') ? '' : habitsCard}${isHidden('trackers') ? '' : trackersCard}</div>
+        <div class="col" style="gap:16px">${prayerCard}${insightsCard}${upCard}${isHidden('health') ? '' : waterCard}</div>
       </div>`;
   },
 };

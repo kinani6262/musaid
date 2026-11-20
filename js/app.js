@@ -3,30 +3,52 @@
    هيكل التطبيق: القائمة، المظهر، مركز التنبيهات، الاختصارات، التشغيل
    ========================================================= */
 
+// القسمان المتقاربان يجمعهما بند واحد في القائمة، وأعلى كل منهما مبدّل بينهما
 const NAV = [
-  { g: '', items: [{ id: 'dashboard', t: 'لوحة اليوم', i: 'home', c: '#8b5cf6' }] },
+  { g: '', items: [{ id: 'dashboard', t: 'لوحة اليوم', i: 'home' }] },
   { g: 'التخطيط', items: [
-    { id: 'day', t: 'جدول اليوم', i: 'day', c: '#3b82f6' },
-    { id: 'week', t: 'الجدول الأسبوعي', i: 'week', c: '#06b6d4' },
-    { id: 'month', t: 'خطة الشهر', i: 'month', c: '#14b8a6' },
-    { id: 'calendar', t: 'التقويم', i: 'calendar', c: '#6366f1' },
+    { id: 'day', t: 'جدول اليوم', i: 'day' },
+    { id: 'week', t: 'الجدول الأسبوعي', i: 'week' },
+    { id: 'month', t: 'خطة الشهر', i: 'month' },
+    { id: 'calendar', t: 'التقويم', i: 'calendar' },
   ] },
   { g: 'الحياة', items: [
-    { id: 'habits', t: 'صناعة العادات', i: 'flame', c: '#f97316' },
-    { id: 'trackers', t: 'المتابعة اليومية', i: 'tracker', c: '#10b981' },
-    { id: 'goals', t: 'الأهداف', i: 'target', c: '#ec4899' },
-    { id: 'health', t: 'العافية', i: 'heart', c: '#ef4444' },
-    { id: 'journal', t: 'المذكرات', i: 'journal', c: '#eab308' },
+    { id: 'habits', t: 'العادات والمتابعة', i: 'flame', also: ['trackers'] },
+    { id: 'goals', t: 'الأهداف', i: 'target' },
+    { id: 'health', t: 'العافية', i: 'heart' },
+    { id: 'journal', t: 'المذكرات', i: 'journal' },
   ] },
   { g: 'المال', items: [
-    { id: 'finance', t: 'المصاريف والأموال', i: 'wallet', c: '#22c55e' },
-    { id: 'subs', t: 'الاشتراكات', i: 'repeat', c: '#f43f5e' },
+    { id: 'finance', t: 'المال والاشتراكات', i: 'wallet', also: ['subs'] },
   ] },
   { g: 'التعلّم', items: [
-    { id: 'study', t: 'الدراسة', i: 'study', c: '#a855f7' },
-    { id: 'reading', t: 'القراءة', i: 'book', c: '#f59e0b' },
+    { id: 'study', t: 'الدراسة', i: 'study' },
+    { id: 'reading', t: 'القراءة', i: 'book' },
   ] },
 ];
+const SECTION_GROUPS = [
+  [['habits', 'العادات'], ['trackers', 'المتابعة اليومية']],
+  [['finance', 'المال'], ['subs', 'الاشتراكات']],
+];
+/** الأقسام التي يمكن إخفاؤها من الإعدادات (لوحة اليوم وجدوله والإعدادات تبقى دائمًا) */
+const HIDEABLE = [
+  ['week', 'الجدول الأسبوعي'], ['month', 'خطة الشهر'], ['calendar', 'التقويم'],
+  ['habits', 'العادات'], ['trackers', 'المتابعة اليومية'], ['goals', 'الأهداف'], ['health', 'العافية'], ['journal', 'المذكرات'],
+  ['finance', 'المال'], ['subs', 'الاشتراكات'], ['study', 'الدراسة'], ['reading', 'القراءة'],
+];
+const isHidden = id => (S().hiddenViews || []).includes(id);
+
+/** بند القائمة: يظهر إن ظهر أحد أقسامه، ويفتح أول قسم ظاهر منها */
+function navTarget(it) { return [it.id].concat(it.also || []).find(id => !isHidden(id)); }
+
+/** المبدّل أعلى القسمين المجموعين */
+App.subnav = function (cur) {
+  const g = SECTION_GROUPS.find(g => g.some(x => x[0] === cur));
+  if (!g) return '';
+  const vis = g.filter(([id]) => id === cur || !isHidden(id));
+  if (vis.length < 2) return '';
+  return `<div class="subnav" role="tablist">${vis.map(([id, t]) => `<button class="${id === cur ? 'on' : ''}" data-act="nav" data-view="${id}" role="tab">${t}</button>`).join('')}</div>`;
+};
 
 function navBadge(id) {
   const s = App.state, today = D.today();
@@ -40,10 +62,19 @@ function navBadge(id) {
 
 App.renderChrome = function () {
   const cur = App.view;
-  $('#nav').innerHTML = NAV.map(g => `${g.g ? `<div class="nav-group-t">${g.g}</div>` : ''}${g.items.map(it => `
-    <button class="nav-item ${cur === it.id ? 'on' : ''}" data-act="nav" data-view="${it.id}">
-      <span class="ni">${ic(it.i)}</span><span>${it.t}</span><span class="nb">${navBadge(it.id)}</span>
-    </button>`).join('')}`).join('');
+  $('#nav').innerHTML = NAV.map(g => {
+    const items = g.items.filter(navTarget);
+    if (!items.length) return '';
+    return `${g.g ? `<div class="nav-group-t">${g.g}</div>` : ''}${items.map(it => {
+      const ids = [it.id].concat(it.also || []);
+      const visIds = ids.filter(id => !isHidden(id));
+      // اسم البند إن ظهر أحد قسميه فقط هو اسم ذلك القسم
+      const label = visIds.length === 1 && it.also ? (SECTION_GROUPS.flat().find(x => x[0] === visIds[0]) || [0, it.t])[1] : it.t;
+      return `<button class="nav-item ${ids.includes(cur) ? 'on' : ''}" data-act="nav" data-view="${navTarget(it)}">
+      <span class="ni">${ic(it.i)}</span><span>${label}</span><span class="nb">${visIds.map(navBadge).join('')}</span>
+    </button>`;
+    }).join('')}`;
+  }).join('');
   const st = T.stats(D.today());
   $('#sidebar-foot').innerHTML = `
     <div class="card flat" style="padding:12px;margin-bottom:8px;background:var(--surface-2)">
@@ -56,8 +87,11 @@ App.renderChrome = function () {
   $('#btn-theme').innerHTML = ic(document.documentElement.dataset.theme === 'dark' ? 'sun' : 'moon');
   const today = D.today();
   $('#top-date').textContent = D.fmt(today) + (S().showHijri ? ' · ' + D.hijri(today) : '');
-  const bn = [['dashboard', 'home', 'الرئيسية'], ['day', 'day', 'اليوم'], ['week', 'week', 'الأسبوع'], ['habits', 'flame', 'العادات'], ['_more', 'menu', 'المزيد']];
-  $('#bottomnav').innerHTML = bn.map(([id, i, t]) => `<button class="bn ${cur === id ? 'on' : ''}" data-act="${id === '_more' ? 'toggle-sidebar' : 'nav'}" data-view="${id}">${ic(i)}<span>${t}</span></button>`).join('');
+  // الشريط السفلي: أربعة أقسام ظاهرة بهذا الترتيب، ثم «المزيد»
+  const cand = [['dashboard', 'home', 'الرئيسية'], ['day', 'day', 'اليوم'], ['week', 'week', 'الأسبوع'], ['habits', 'flame', 'العادات'], ['calendar', 'calendar', 'التقويم'], ['study', 'study', 'الدراسة'], ['finance', 'wallet', 'المال']];
+  const bn = cand.filter(([id]) => !isHidden(id)).slice(0, 4).concat([['_more', 'menu', 'المزيد']]);
+  const group = id => (SECTION_GROUPS.find(g => g.some(x => x[0] === id)) || [[id]]).map(x => x[0]);
+  $('#bottomnav').innerHTML = bn.map(([id, i, t]) => `<button class="bn ${group(id).includes(cur) ? 'on' : ''}" data-act="${id === '_more' ? 'toggle-sidebar' : 'nav'}" data-view="${id}">${ic(i)}<span>${t}</span></button>`).join('');
   App.localize($('#sidebar'));
   App.localize($('#topbar'));
 };
@@ -86,7 +120,7 @@ App.on('open-inbox', () => {
   if ($('#popover-root .pop')) { App.closePopover(); return; }
   const items = App.state.inbox;
   const pop = App.popover(`
-    <div class="pop-h"><b>التنبيهات</b><div class="flex">${items.length ? `<button class="btn btn-sm btn-ghost" data-act="inbox-read">تحديد الكل كمقروء</button><button class="icon-btn sm" data-act="inbox-clear" data-tip="مسح الكل">${ic('trash')}</button>` : ''}</div></div>
+    <div class="pop-h"><b>التنبيهات</b><div class="flex">${items.length ? `<button class="btn btn-sm btn-ghost" data-act="inbox-read">تعليم الكل مقروءًا</button><button class="icon-btn sm" data-act="inbox-clear" data-tip="مسح الكل">${ic('trash')}</button>` : ''}</div></div>
     ${items.length ? items.map(x => `<div class="inbox-item ${x.read ? '' : 'unread'}" data-act="inbox-open" data-id="${x.id}"><span class="ie">${x.icon || '🔔'}</span><div class="grow"><div class="small bold">${esc(x.title)}</div>${x.body ? `<div class="small text-2">${esc(x.body)}</div>` : ''}<div class="tiny muted">${timeAgo(x.time)}</div></div></div>`).join('')
       : App.empty('🔕', 'لا تنبيهات', 'ستظهر هنا تذكيرات المواعيد والتجديدات')}
     ${'Notification' in window && Notification.permission === 'default' ? `<div style="padding:12px 16px"><button class="btn btn-sm btn-soft btn-block" data-act="ask-notify">🔔 تفعيل إشعارات النظام</button></div>` : ''}`);

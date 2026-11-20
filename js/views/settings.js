@@ -29,12 +29,12 @@ App.views.settings = {
       <div class="grid g-2">
         <div class="col" style="gap:16px">
           <div class="card">
-            <div class="card-t mb">👤 الملف الشخصي</div>
+            <div class="card-t mb">الملف الشخصي</div>
             <div class="field" style="margin:0"><label>اسمك (للترحيب)</label><input class="inp" value="${esc(st.name)}" data-change="set" data-k="name" placeholder="اكتب اسمك"></div>
           </div>
 
           <div class="card">
-            <div class="card-t mb">🎨 المظهر</div>
+            <div class="card-t mb">المظهر</div>
             ${row('السِّمة', '', `<div class="tabs">${[['dark', '🌙 ليلي'], ['light', '☀️ نهاري'], ['auto', '🖥️ تلقائي']].map(([v, l]) => `<button class="tab ${st.theme === v ? 'on' : ''}" data-act="set-theme" data-v="${v}">${l}</button>`).join('')}</div>`)}
             ${row('اللون المميّز', '', `<div class="swatches">${ACCENTS.map(([id, c]) => `<button class="sw ${st.accent === id ? 'on' : ''}" style="--c:${c}" data-act="set-accent" data-v="${id}" aria-label="${id}"></button>`).join('')}</div>`)}
             ${row('شكل الأرقام', 'تُطبَّق على النصوص المعروضة', sel('digits', [['latn', '123 لاتينية'], ['arab', '١٢٣ عربية']], st.digits))}
@@ -43,14 +43,20 @@ App.views.settings = {
           </div>
 
           <div class="card">
-            <div class="card-t mb">🗓️ التقويم والجدول</div>
+            <div class="card-t">الأقسام الظاهرة</div>
+            <div class="tiny muted mb">أخفِ ما لا تستعمله فتخفّ القائمة. لا يُحذف شيء من بياناته، وتعيده متى شئت.</div>
+            <div class="vis-grid">${HIDEABLE.map(([id, name]) => `<button class="vis-chip ${isHidden(id) ? '' : 'on'}" data-act="toggle-view" data-v="${id}">${isHidden(id) ? '' : ic('check')}${name}</button>`).join('')}</div>
+          </div>
+
+          <div class="card">
+            <div class="card-t mb">التقويم والجدول</div>
             ${row('بداية الأسبوع', '', sel('weekStart', [[6, 'السبت'], [0, 'الأحد'], [1, 'الاثنين']], st.weekStart))}
             ${row('بداية اليوم في الجدول', '', sel('dayStart', hours, st.dayStart))}
             ${row('نهاية اليوم في الجدول', '', sel('dayEnd', hours, st.dayEnd))}
           </div>
 
           <div class="card">
-            <div class="card-t mb">🔔 التنبيهات</div>
+            <div class="card-t mb">التنبيهات</div>
             ${row('تفعيل التنبيهات', 'قبل المواعيد بيوم، وقبل وقت المهام، وقبل تجديد الاشتراكات', sw('notify', st.notify))}
             ${row('إشعارات النظام', perm === 'granted' ? '✅ مفعّلة — تصلك حتى وأنت في نافذة أخرى' : perm === 'denied' ? '⛔ محظورة من المتصفح — فعّلها من إعدادات الموقع' : perm === 'unsupported' ? 'غير مدعومة في هذا المتصفح' : 'اسمح للتطبيق بإظهار الإشعارات',
               perm === 'default' ? `<button class="btn btn-sm btn-soft" data-act="ask-notify">السماح</button>` : perm === 'granted' ? `<button class="btn btn-sm btn-ghost" data-act="test-notify">تجربة</button>` : '')}
@@ -70,7 +76,7 @@ App.views.settings = {
           ${App.sync.cardHtml()}
 
           <div class="card">
-            <div class="card-t mb">📱 الربط مع الهاتف</div>
+            <div class="card-t mb">الربط مع الهاتف</div>
             <div class="small text-2 mb">صدّر جدولك إلى تقويم الهاتف لتصلك كل التنبيهات حتى والتطبيق مغلق، وافتح التطبيق نفسه على الهاتف من رابط واحد.${matchMedia('(display-mode: standalone)').matches ? ' <b>✅ التطبيق مثبّت على هذا الجهاز.</b>' : ''}</div>
             <div class="flex flex-wrap">
               <button class="btn btn-sm btn-primary" data-act="phone-guide">📱 دليل الربط خطوة بخطوة</button>
@@ -80,7 +86,7 @@ App.views.settings = {
           </div>
 
           <div class="card">
-            <div class="card-t mb">📅 جدولي الأساسي</div>
+            <div class="card-t mb">جدولي الأساسي</div>
             <div class="small text-2 mb">السنن اليومية، والدروس والبرامج الأسبوعية، والعادات. يُضاف تلقائيًا في أول فتح على أي جهاز، ويمكنك إعادة تحميله متى شئت.</div>
             <div class="flex flex-wrap">
               <button class="btn btn-sm btn-soft" data-act="schedule-reload">${ic('reset')} إعادة تحميل جدولي</button>
@@ -91,7 +97,7 @@ App.views.settings = {
           </div>
 
           <div class="card">
-            <div class="card-t mb">🍅 مؤقّت التركيز والعافية</div>
+            <div class="card-t mb">مؤقّت التركيز والعافية</div>
             ${row('مدة جلسة التركيز (دقيقة)', '', num('pomodoro.focus', st.pomodoro.focus, 5, 120))}
             ${row('الاستراحة القصيرة', '', num('pomodoro.short', st.pomodoro.short, 1, 30))}
             ${row('الاستراحة الطويلة', '', num('pomodoro.long', st.pomodoro.long, 5, 60))}
@@ -103,7 +109,7 @@ App.views.settings = {
 
         <div class="col" style="gap:16px">
           <div class="card">
-            <div class="card-t mb">🕌 مواقيت الصلاة</div>
+            <div class="card-t mb">مواقيت الصلاة</div>
             ${row('إظهار مواقيت الصلاة', 'في لوحة اليوم', sw('prayer.show', p.show))}
             ${row('إظهارها في جدول اليوم', 'وتجنّبها عند الترتيب التلقائي', sw('prayer.inDay', p.inDay))}
             ${row('تنبيه قبل الأذان بـ10 دقائق', '', sw('prayer.remind', p.remind))}
@@ -119,7 +125,7 @@ App.views.settings = {
           </div>
 
           <div class="card">
-            <div class="card-t mb">💰 المال</div>
+            <div class="card-t mb">المال</div>
             ${row('العملة', '', sel('currency', CURRENCIES, st.currency))}
             <div class="lbl mt mb">تصنيفات المصاريف</div>
             <div class="flex flex-wrap" style="gap:6px">${st.expenseCats.map(c => `<span class="chip" style="padding:4px 6px 4px 10px">${c.icon} ${esc(c.name)} ${st.expenseCats.length > 1 ? `<button class="icon-btn sm" style="width:20px;height:20px" data-act="cat-del" data-type="expense" data-id="${c.id}">${ic('x')}</button>` : ''}</span>`).join('')}
@@ -130,13 +136,13 @@ App.views.settings = {
           </div>
 
           <div class="card">
-            <div class="card-t mb">🧭 مجالات الحياة (لخطة الشهر والأهداف)</div>
+            <div class="card-t mb">مجالات الحياة (لخطة الشهر والأهداف)</div>
             ${st.areas.map(a => `<div class="trow"><span class="cat-ic" style="--c:${a.color}">${a.icon}</span><div class="grow bold small">${esc(a.name)}</div><button class="icon-btn sm" data-act="area-edit" data-id="${a.id}">${ic('edit')}</button>${st.areas.length > 1 ? `<button class="icon-btn sm" data-act="area-del" data-id="${a.id}">${ic('trash')}</button>` : ''}</div>`).join('')}
             <button class="btn btn-sm btn-soft mt-s" data-act="area-edit">${ic('plus')} مجال جديد</button>
           </div>
 
           <div class="card">
-            <div class="card-t mb">💾 البيانات والنسخ الاحتياطي</div>
+            <div class="card-t mb">البيانات والنسخ الاحتياطي</div>
             <div class="small text-2 mb">${App.sync.user ? 'بياناتك محفوظة في متصفحك وفي حسابك للمزامنة. النسخة الاحتياطية احتياط إضافي.' : 'بياناتك محفوظة في متصفحك على هذا الجهاز فقط. صدّر نسخة احتياطية بانتظام، ويمكنك استيرادها على جهاز آخر.'}</div>
             <div class="flex flex-wrap">
               <button class="btn btn-sm btn-primary" data-act="backup-export">${ic('download')} تصدير نسخة احتياطية</button>
@@ -149,7 +155,7 @@ App.views.settings = {
           </div>
 
           <div class="card">
-            <div class="card-t mb">⌨️ اختصارات لوحة المفاتيح</div>
+            <div class="card-t mb">اختصارات لوحة المفاتيح</div>
             <div class="small text-2" style="line-height:2.1">
               <span class="chip">N</span> إضافة سريعة &nbsp; <span class="chip">Ctrl + K</span> بحث &nbsp; <span class="chip">T</span> تبديل المظهر<br>
               <span class="chip">1</span> لوحة اليوم &nbsp; <span class="chip">2</span> جدول اليوم &nbsp; <span class="chip">3</span> الأسبوع &nbsp; <span class="chip">4</span> الشهر &nbsp; <span class="chip">5</span> التقويم &nbsp; <span class="chip">Esc</span> إغلاق النوافذ
@@ -168,7 +174,7 @@ App.views.settings = {
         let data;
         try { data = JSON.parse(r.result); } catch (e) { App.toast('الملف غير صالح', { icon: '⛔' }); return; }
         if (!data || typeof data !== 'object' || !data.settings) { App.toast('هذا ليس ملف نسخة احتياطية من مُساعِد', { icon: '⛔' }); return; }
-        App.confirm('سيتم استبدال بياناتك الحالية بالنسخة المستوردة. متابعة؟', () => {
+        App.confirm('ستُستبدل النسخة المستوردة ببياناتك الحالية. متابعة؟', () => {
           App.state = App.merge(App.defaults(), data);
           App.save(); App.applyTheme(); App.render(true);
           App.toast('استُوردت النسخة الاحتياطية بنجاح', { icon: '✅' });
@@ -234,7 +240,7 @@ App.on('ask-notify', () => {
   if (!('Notification' in window)) return;
   if (Notification.permission === 'default') Notification.requestPermission().then(() => App.refresh());
 });
-App.on('test-notify', () => App.notify({ icon: '🔔', title: 'تجربة التنبيهات', body: 'التنبيهات تعمل بشكل ممتاز ✓' }));
+App.on('test-notify', () => App.notify({ icon: '🔔', title: 'تجربة التنبيهات', body: 'التنبيهات تعمل على ما يرام ✓' }));
 App.on('install-app', () => {
   if (!App._install) return;
   App._install.prompt();
@@ -296,15 +302,26 @@ App.on('backup-export', () => {
   App.toast('صُدّرت النسخة الاحتياطية — احفظها في مكان آمن', { icon: '💾' });
 });
 App.on('backup-import', () => $('#import-file').click());
-App.on('demo-load', () => App.confirm('سيتم استبدال بياناتك الحالية ببيانات تجريبية للاستكشاف (يمكنك التراجع مباشرة بعدها). متابعة؟', () => {
+App.on('demo-load', () => App.confirm('ستُستبدل بيانات تجريبية للاستكشاف ببياناتك الحالية (يمكنك التراجع مباشرة بعدها). متابعة؟', () => {
   const snap = JSON.stringify(App.state);
   App.loadDemo();
   App.toast('حُمّلت البيانات التجريبية', { icon: '✨', undo: () => { App.state = JSON.parse(snap); App.save(); App.applyTheme(); App.refresh(); } });
 }, { ok: 'تحميل' }));
-App.on('data-reset', () => App.confirm('سيتم حذف جميع بياناتك نهائيًا من هذا المتصفح (المهام، المصاريف، العادات…). هل صدّرت نسخة احتياطية؟', () => {
+App.on('data-reset', () => App.confirm('ستُحذف جميع بياناتك نهائيًا من هذا المتصفح (المهام، المصاريف، العادات…). هل صدّرت نسخة احتياطية؟', () => {
   const name = S().name;
   App.state = App.defaults();
   S().name = name; S().onboarded = true;
   App.save(); App.applyTheme(); App.render(true);
   App.toast('حُذفت كل البيانات — بداية جديدة موفقة', { icon: '🧹' });
 }, { ok: 'احذف كل شيء', danger: true }));
+
+/* إظهار قسم أو إخفاؤه من القائمة */
+App.on('toggle-view', el => {
+  const st = S(), id = el.dataset.v;
+  const list = Array.isArray(st.hiddenViews) ? st.hiddenViews.slice() : [];
+  const i = list.indexOf(id);
+  if (i >= 0) list.splice(i, 1); else list.push(id);
+  st.hiddenViews = list;
+  App.save();
+  App.refresh();
+});

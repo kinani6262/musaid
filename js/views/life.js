@@ -23,12 +23,12 @@ App.views.goals = {
     const avg = active.length ? Math.round(sum(active, goalProgress) / active.length) : 0;
     return `
       <div class="page-h">
-        <div><h2>${ic('target', 'ic-lg')} الأهداف</h2><div class="sub">حوّل أحلامك إلى خطوات صغيرة قابلة للقياس</div></div>
+        <div><h2>${ic('target', 'ic-lg')} الأهداف</h2><div class="sub hide-mobile">حوّل أحلامك إلى خطوات صغيرة قابلة للقياس</div></div>
         <div class="actions"><button class="btn btn-sm btn-primary" data-act="goal-new">${ic('plus')} هدف جديد</button></div>
       </div>
       <div class="grid g-3 mb">
-        <div class="card stat"><div class="si" style="--c:#ec4899">🎯</div><div><div class="sv">${active.length}</div><div class="sl">أهداف قيد العمل</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#22c55e">🏆</div><div><div class="sv">${all.length - active.length}</div><div class="sl">أهداف محقّقة</div></div></div>
+        <div class="card stat"><div><div class="sv">${active.length}</div><div class="sl">أهداف قيد العمل</div></div></div>
+        <div class="card stat"><div><div class="sv">${all.length - active.length}</div><div class="sl">أهداف محقّقة</div></div></div>
         <div class="card stat">${App.ring(avg, { size: 52, stroke: 6, label: avg + '%', color: '#ec4899' })}<div><div class="sl">متوسط التقدّم</div></div></div>
       </div>
       <div class="mb">${App.tabs([{ id: 'active', label: 'قيد العمل' }, { id: 'done', label: 'المحقّقة' }, { id: 'all', label: 'الكل' }], filter, 'goal-filter')}</div>
@@ -47,7 +47,7 @@ App.views.goals = {
             ${!g.done ? `<div class="flex mt-s"><input class="inp inp-sm grow ms-inp" data-g="${g.id}" placeholder="أضف خطوة ثم Enter"><button class="btn btn-sm btn-ghost" data-act="ms-add" data-g="${g.id}">${ic('plus')}</button></div>` : ''}</div>
           ${!g.done && pr >= 100 ? `<button class="btn btn-primary btn-sm" data-act="goal-done" data-id="${g.id}">🏆 أعلن تحقيق الهدف</button>` : ''}
         </div>`;
-      }).join('')}</div>` : `<div class="card">${App.empty('🎯', filter === 'done' ? 'لم تحقق أهدافًا بعد — قريبًا بإذن الله' : 'لا أهداف بعد', 'اكتب هدفًا واضحًا، وقسّمه إلى خطوات، وحدد له موعدًا', `<button class="btn btn-primary btn-sm" data-act="goal-new">${ic('plus')} هدفي الأول</button>`)}</div>`}`;
+      }).join('')}</div>` : `<div class="card">${App.empty('🎯', filter === 'done' ? 'لم تحقّق أهدافًا بعد — قريبًا بإذن الله' : 'لا أهداف بعد', 'اكتب هدفًا واضحًا، وقسّمه إلى خطوات، وحدّد له موعدًا', `<button class="btn btn-primary btn-sm" data-act="goal-new">${ic('plus')} هدفي الأول</button>`)}</div>`}`;
   },
   after() {
     $$('.ms-inp').forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') App.acts['ms-add']({ dataset: { g: i.dataset.g } }); }));
@@ -100,7 +100,7 @@ App.views.journal = {
     const tabs = App.tabs([{ id: 'diary', label: 'اليوميات', icon: 'journal' }, { id: 'notes', label: 'الملاحظات', icon: 'note' }], tab, 'j-tab');
     return `
       <div class="page-h">
-        <div><h2>${ic('journal', 'ic-lg')} المذكرات</h2><div class="sub">دوّن يومك، واحفظ أفكارك قبل أن تطير</div></div>
+        <div><h2>${ic('journal', 'ic-lg')} المذكرات</h2><div class="sub hide-mobile">دوّن يومك، واحفظ أفكارك قبل أن تطير</div></div>
         <div class="actions">${tab === 'notes' ? `<button class="btn btn-sm btn-primary" data-act="note-new">${ic('plus')} ملاحظة</button>` : ''}</div>
       </div>
       <div class="mb">${tabs}</div>
@@ -135,7 +135,7 @@ function diaryView(p) {
       </div>
       <div class="col" style="gap:16px">
         <div class="card">
-          <div class="card-t mb">🗓️ مزاج ${MONTHS[Number(mk.slice(5)) - 1]}</div>
+          <div class="card-t mb">مزاج ${MONTHS[Number(mk.slice(5)) - 1]}</div>
           <div class="cal" style="gap:4px">${Array.from({ length: 7 }, (_, i) => `<div class="cal-h" style="padding:0">${DAYS_S[(S().weekStart + i) % 7].slice(0, 2)}</div>`).join('')}
             ${'<div></div>'.repeat(pads)}${Array.from({ length: md }, (_, i) => {
               const dk = mk + '-' + pad2(i + 1), e = s.journal[dk];
@@ -143,7 +143,7 @@ function diaryView(p) {
             }).join('')}</div>
         </div>
         <div class="card">
-          <div class="card-t mb">📖 تدوينات سابقة</div>
+          <div class="card-t mb">تدوينات سابقة</div>
           ${recent.length ? recent.map(x => `<div class="trow" style="cursor:pointer" data-act="j-go" data-date="${x}"><span style="font-size:1.2rem">${s.journal[x].mood ? MOODS[s.journal[x].mood - 1].e : '📝'}</span><div class="grow"><div class="small bold">${D.fmt(x, false)}</div><div class="tiny muted ellipsis">${esc((s.journal[x].text || '').slice(0, 60)) || '—'}</div></div></div>`).join('') : `<div class="muted small">ستظهر تدويناتك هنا.</div>`}
         </div>
       </div>
@@ -211,23 +211,23 @@ App.views.health = {
     const sleepData = days14.slice().reverse().map(k => ({ label: String(D.day(k)), values: [(s.health[k] || {}).sleep || 0], tip: `<b>${D.fmt(k, false)}</b><br>${(s.health[k] || {}).sleep || 0} ساعة نوم` }));
     return `
       <div class="page-h">
-        <div><h2>${ic('heart', 'ic-lg')} العافية</h2><div class="sub">«نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ»</div></div>
+        <div><h2>${ic('heart', 'ic-lg')} العافية</h2><div class="sub hide-mobile">«نعمتان مغبون فيهما كثير من الناس: الصحة والفراغ»</div></div>
       </div>
       <div class="grid g-4 keep-2 mb">
-        <div class="card stat"><div class="si" style="--c:var(--info)">💧</div><div><div class="sv">${avg('water', last7).toFixed(1)}</div><div class="sl">متوسط أكواب الماء (7 أيام)</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#6366f1">😴</div><div><div class="sv">${avg('sleep', last7).toFixed(1)} س</div><div class="sl">متوسط النوم</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#ef4444">🏃</div><div><div class="sv">${sum(last7, k => (s.health[k] || {}).exercise || 0)} د</div><div class="sl">رياضة آخر 7 أيام</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#22c55e">⚖️</div><div><div class="sv">${weights.length ? s.health[weights[weights.length - 1]].weight : '—'}</div><div class="sl">الوزن الحالي ${weights.length > 1 ? `<span class="${wChange <= 0 ? 'good' : 'warn'}">(${wChange > 0 ? '+' : ''}${wChange.toFixed(1)})</span>` : ''}</div></div></div>
+        <div class="card stat"><div><div class="sv">${avg('water', last7).toFixed(1)}</div><div class="sl">متوسط أكواب الماء (7 أيام)</div></div></div>
+        <div class="card stat"><div><div class="sv">${avg('sleep', last7).toFixed(1)} س</div><div class="sl">متوسط النوم</div></div></div>
+        <div class="card stat"><div><div class="sv">${sum(last7, k => (s.health[k] || {}).exercise || 0)} د</div><div class="sl">رياضة آخر 7 أيام</div></div></div>
+        <div class="card stat"><div><div class="sv">${weights.length ? s.health[weights[weights.length - 1]].weight : '—'}</div><div class="sl">الوزن الحالي ${weights.length > 1 ? `<span class="${wChange <= 0 ? 'good' : 'warn'}">(${wChange > 0 ? '+' : ''}${wChange.toFixed(1)})</span>` : ''}</div></div></div>
       </div>
       <div class="grid g-2 mb">
         <div class="card">
-          <div class="card-h"><div class="card-t">📍 اليوم</div><span class="small muted">${D.fmt(today, false)}</span></div>
+          <div class="card-h"><div class="card-t">اليوم</div><span class="small muted">${D.fmt(today, false)}</span></div>
           <div class="lbl mb">💧 الماء: ${h.water || 0} من ${S().waterGoal} أكواب</div>
           <div class="glasses mb">${Array.from({ length: S().waterGoal }, (_, i) => `<button class="glass ${i < (h.water || 0) ? 'on' : ''}" data-act="water-set" data-n="${i + 1}" data-date="${today}"></button>`).join('')}</div>
           <div class="row">${HEALTH_KEYS.filter(x => x.k !== 'water').map(x => `<div class="field"><label>${x.e} ${x.l} (${x.u})</label><input class="inp" type="number" step="${x.step}" min="0" inputmode="decimal" value="${h[x.k] ?? ''}" data-change="health-set" data-date="${today}" data-k="${x.k}"></div>`).join('')}</div>
         </div>
         <div class="card">
-          <div class="card-h"><div class="card-t">😴 ساعات النوم — آخر 14 يومًا</div></div>
+          <div class="card-h"><div class="card-t">ساعات النوم — آخر 14 يومًا</div></div>
           ${App.chart({ data: sleepData, series: [{ name: 'النوم', color: 'var(--s7)' }], height: 200, goal: S().sleepGoal, goalLabel: 'الهدف ' + S().sleepGoal + ' س', fmt: v => String(Math.round(v * 10) / 10) })}
         </div>
       </div>
@@ -237,7 +237,7 @@ App.views.health = {
           <tbody>${days14.map(k => { const d = s.health[k] || {}; return `<tr><td class="small nowrap">${k === today ? '<b>اليوم</b>' : D.dayShort(k) + ' ' + D.day(k)}</td>${HEALTH_KEYS.map(x => `<td class="c"><input class="tbl-inp" type="number" step="${x.step}" min="0" value="${d[x.k] ?? ''}" data-change="health-set" data-date="${k}" data-k="${x.k}" aria-label="${x.l}"></td>`).join('')}</tr>`; }).join('')}</tbody></table>
         </div>
         <div class="card">
-          <div class="card-h"><div class="card-t">⚖️ منحنى الوزن</div></div>
+          <div class="card-h"><div class="card-t">منحنى الوزن</div></div>
           ${weights.length > 1 ? App.chart({ kind: 'line', data: weights.map(k => ({ label: D.short(k), value: s.health[k].weight })), color: 'var(--s3)', height: 220, fmt: v => (Math.round(v * 10) / 10).toString() }) : App.empty('⚖️', 'سجّل وزنك في يومين على الأقل', 'ليظهر منحنى التغيّر')}
         </div>
       </div>`;
@@ -264,13 +264,13 @@ App.views.reading = {
     s.books.forEach(b => counts[b.status]++);
     return `
       <div class="page-h">
-        <div><h2>${ic('book', 'ic-lg')} القراءة</h2><div class="sub">«اقرأ» أول ما نزل — اجعل لك وردًا من القراءة كل يوم</div></div>
+        <div><h2>${ic('book', 'ic-lg')} القراءة</h2><div class="sub hide-mobile">«اقرأ» أول ما نزل — اجعل لك وردًا من القراءة كل يوم</div></div>
         <div class="actions"><button class="btn btn-sm btn-primary" data-act="book-new">${ic('plus')} كتاب</button></div>
       </div>
       <div class="grid g-3 mb">
         <div class="card stat">${App.ring(pct(finishedYear.length, S().readingGoal), { size: 70, stroke: 8, label: finishedYear.length + '/' + S().readingGoal, color: '#f59e0b' })}<div><div class="bold">تحدي القراءة ${year}</div><div class="sl">كتب أنهيتها من هدفك السنوي</div><button class="btn btn-sm btn-ghost" style="padding:0" data-act="reading-goal">تعديل الهدف</button></div></div>
-        <div class="card stat"><div class="si" style="--c:#a855f7">📄</div><div><div class="sv">${pagesYear.toLocaleString('en-US')}</div><div class="sl">صفحة قرأتها هذا العام</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#3b82f6">📖</div><div><div class="sv">${counts.reading}</div><div class="sl">كتب أقرؤها الآن</div></div></div>
+        <div class="card stat"><div><div class="sv">${pagesYear.toLocaleString('en-US')}</div><div class="sl">صفحة قرأتها هذا العام</div></div></div>
+        <div class="card stat"><div><div class="sv">${counts.reading}</div><div class="sl">كتب أقرؤها الآن</div></div></div>
       </div>
       <div class="mb">${App.tabs([{ id: 'reading', label: `أقرأ الآن (${counts.reading})` }, { id: 'want', label: `أريد قراءته (${counts.want})` }, { id: 'done', label: `أنهيته (${counts.done})` }], tab, 'book-tab')}</div>
       ${list.length ? `<div class="grid g-auto">${list.map(b => {

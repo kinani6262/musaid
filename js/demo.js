@@ -156,7 +156,7 @@ App.loadDemo = function () {
   }
   const tp = (arr, done) => arr.map((t, i) => ({ id: uid(), text: t, done: i < done }));
   s.exams.push(
-    { id: uid(), title: 'الاختبار النصفي', subject: math.id, date: after(6), time: '09:00', place: 'القاعة 204', topics: tp(['التفاضل', 'التكامل المحدود', 'المتتاليات', 'المصفوفات', 'حل نماذج سابقة'], 2) },
+    { id: uid(), title: 'الاختبار النصفي', subject: math.id, date: after(6), time: '09:00', place: 'القاعة 204', topics: tp(['التفاضل', 'التكامل المحدود', 'المتتاليات', 'المصفوفات', 'حلّ نماذج سابقة'], 2) },
     { id: uid(), title: 'اختبار قصير — الحركة الدائرية', subject: phys.id, date: after(12), time: '11:00', place: '', topics: tp(['قوانين نيوتن', 'الحركة الدائرية'], 0) },
     { id: uid(), title: 'اختبار المحادثة', subject: eng.id, date: ago(10), time: '10:00', grade: '18/20', topics: [] },
   );

@@ -156,7 +156,7 @@ App.form = function (cfg) {
     if (missing.length) {
       const el = form.elements[missing[0].name];
       if (el && el.focus) { el.focus(); el.style.borderColor = 'var(--bad)'; }
-      App.toast('يرجى تعبئة: ' + missing.map(f => f.label).join('، '), { icon: '✋' });
+      App.toast('أكمل: ' + missing.map(f => f.label).join('، '), { icon: '✋' });
       return;
     }
     if (cfg.onSubmit(out, m) !== false) m.close();

@@ -19,7 +19,7 @@ const Fin = {
 };
 
 App.views.finance = {
-  title: 'المصاريف والأموال',
+  title: 'المال',
   render(p) {
     const tab = App._finTab = p.tab || App._finTab || 'overview';
     const mk = App._finMonth = App._finMonth || D.mk(D.today());
@@ -39,7 +39,7 @@ App.views.finance = {
     const body = { overview: finOverview, tx: finTx, budget: finBudget, savings: finSavings, debts: finDebts }[tab](mk);
     return `
       <div class="page-h">
-        <div><h2>${ic('wallet', 'ic-lg')} المصاريف والأموال</h2><div class="sub">تحكّم في دخلك ومصاريفك وحقّق أهدافك المالية</div></div>
+        <div><h2>${ic('wallet', 'ic-lg')} المال</h2><div class="sub hide-mobile">تحكّم في دخلك ومصاريفك وحقّق أهدافك المالية</div></div>
         <div class="actions">${monthNav}
           <button class="btn btn-sm" data-act="tx-new" data-type="income">${ic('plus')} دخل</button>
           <button class="btn btn-sm btn-primary" data-act="tx-new" data-type="expense">${ic('plus')} مصروف</button>
@@ -74,28 +74,28 @@ function finOverview(mk) {
 
   return `
     <div class="grid g-4 keep-2 mb">
-      <div class="card stat"><div class="si" style="--c:#6366f1">🏦</div><div><div class="sv ${bal < 0 ? 'bad' : ''}">${money(bal, false)}</div><div class="sl">الرصيد الإجمالي (${S().currency})</div></div></div>
-      <div class="card stat"><div class="si" style="--c:#22c55e">📥</div><div><div class="sv">${money(inc, false)}</div><div class="sl">دخل الشهر</div></div></div>
-      <div class="card stat"><div class="si" style="--c:#f97316">📤</div><div><div class="sv">${money(exp, false)}</div><div class="sl">مصروف الشهر ${delta !== null ? `<span class="${delta > 0 ? 'bad' : 'good'}">${delta > 0 ? '▲' : '▼'} ${Math.abs(delta)}%</span>` : ''}</div></div></div>
-      <div class="card stat"><div class="si" style="--c:${net >= 0 ? 'var(--good)' : 'var(--bad)'}">${net >= 0 ? '💚' : '⚠️'}</div><div><div class="sv">${inc ? pct(net, inc) : 0}%</div><div class="sl">نسبة الادخار · ${money(net)}</div></div></div>
+      <div class="card stat"><div><div class="sv ${bal < 0 ? 'bad' : ''}">${money(bal, false)}</div><div class="sl">الرصيد الإجمالي (${S().currency})</div></div></div>
+      <div class="card stat"><div><div class="sv">${money(inc, false)}</div><div class="sl">دخل الشهر</div></div></div>
+      <div class="card stat"><div><div class="sv">${money(exp, false)}</div><div class="sl">مصروف الشهر ${delta !== null ? `<span class="${delta > 0 ? 'bad' : 'good'}">${delta > 0 ? '▲' : '▼'} ${Math.abs(delta)}%</span>` : ''}</div></div></div>
+      <div class="card stat"><div><div class="sv">${inc ? pct(net, inc) : 0}%</div><div class="sl">نسبة الادخار · ${money(net)}</div></div></div>
     </div>
     <div class="grid g-2 mb">
       <div class="card">
-        <div class="card-h"><div class="card-t">🍩 توزيع المصاريف حسب التصنيف</div></div>
+        <div class="card-h"><div class="card-t">توزيع المصاريف حسب التصنيف</div></div>
         ${App.donut(donutData, { center: money(exp, false), centerSub: S().currency })}
       </div>
       <div class="card">
-        <div class="card-h"><div class="card-t">📊 الدخل والمصروف — آخر 6 أشهر</div>${App.legend([{ name: 'الدخل', color: 'var(--s1)' }, { name: 'المصروف', color: 'var(--s2)' }])}</div>
+        <div class="card-h"><div class="card-t">الدخل والمصروف — آخر 6 أشهر</div>${App.legend([{ name: 'الدخل', color: 'var(--s1)' }, { name: 'المصروف', color: 'var(--s2)' }])}</div>
         ${App.chart({ data: barData, series: [{ name: 'الدخل', color: 'var(--s1)' }, { name: 'المصروف', color: 'var(--s2)' }], height: 220, fmt: v => compactNum(v) })}
       </div>
     </div>
     <div class="grid g-2">
       <div class="card">
-        <div class="card-h"><div class="card-t">📅 المصروف اليومي</div><span class="small muted">المتوسط ${money(Math.round(avgDaily))} يوميًا</span></div>
+        <div class="card-h"><div class="card-t">المصروف اليومي</div><span class="small muted">المتوسط ${money(Math.round(avgDaily))} يوميًا</span></div>
         ${App.chart({ data: daily, series: [{ name: 'المصروف', color: 'var(--s2)' }], height: 200, goal: budget ? budget / md : 0, goalLabel: 'الحد اليومي', fmt: v => compactNum(v) })}
       </div>
       <div class="card">
-        <div class="card-h"><div class="card-t">🧾 أحدث العمليات</div><button class="btn btn-sm btn-ghost" data-act="fin-tab" data-id="tx">عرض الكل</button></div>
+        <div class="card-h"><div class="card-t">أحدث العمليات</div><button class="btn btn-sm btn-ghost" data-act="fin-tab" data-id="tx">عرض الكل</button></div>
         ${recent.length ? recent.map(txRow).join('') : App.empty('🧾', 'لا عمليات بعد', 'سجّل أول مصروف لك من زر «مصروف»')}
       </div>
     </div>`;
@@ -159,7 +159,7 @@ function finBudget(mk) {
         <div><div class="sv">${money(totalS, false)} <span class="small muted">/ ${money(totalB, false)}</span></div><div class="sl">المصروف من الميزانية الكلية</div>
         ${isCur && totalB ? `<div class="tiny mt-s">المتبقي ${money(Math.max(0, totalB - totalS))} · يمكنك إنفاق <b>${money(Math.max(0, Math.round((totalB - totalS) / remainingDays)))}</b> يوميًا</div>` : ''}</div></div>
       <div class="card span-2">
-        <div class="card-t mb">💡 قاعدة 50/30/20 لتوزيع الدخل ${inc ? `<span class="small muted">(دخل الشهر ${money(inc)})</span>` : ''}</div>
+        <div class="card-t mb">قاعدة 50/30/20 لتوزيع الدخل ${inc ? `<span class="small muted">(دخل الشهر ${money(inc)})</span>` : ''}</div>
         <div class="grid g-3 keep-2" style="gap:10px">
           <div><div class="small muted">احتياجات أساسية 50%</div><div class="bold">${inc ? money(inc * .5) : '—'}</div><div class="tiny muted">سكن، فواتير، طعام، مواصلات</div></div>
           <div><div class="small muted">رغبات 30%</div><div class="bold">${inc ? money(inc * .3) : '—'}</div><div class="tiny muted">ترفيه، تسوق، مطاعم</div></div>
@@ -168,7 +168,7 @@ function finBudget(mk) {
       </div>
     </div>
     <div class="card">
-      <div class="card-h"><div class="card-t">🎯 ميزانية كل تصنيف (شهريًا)</div><span class="small muted">اكتب المبلغ في الخانة لتحديد الميزانية</span></div>
+      <div class="card-h"><div class="card-t">ميزانية كل تصنيف (شهريًا)</div><span class="small muted">اكتب المبلغ في الخانة لتحديد الميزانية</span></div>
       ${S().expenseCats.map(c => {
         const sp = spent[c.id] || 0, bd = Number(b[c.id]) || 0, p = pct(sp, bd);
         const cls = !bd ? '' : p >= 100 ? 'status-bad' : p >= 80 ? 'status-warn' : 'status-ok';
@@ -195,7 +195,7 @@ function finSavings() {
       let need = '';
       if (x.deadline && x.saved < x.target) {
         const months = Math.max(1, Math.ceil(D.diff(D.today(), x.deadline) / 30));
-        need = `<div class="tiny muted">تحتاج ادخار <b>${money(Math.ceil((x.target - x.saved) / months))}</b> شهريًا لتصل ${D.rel(x.deadline)}</div>`;
+        need = `<div class="tiny muted">تحتاج إلى ادخار <b>${money(Math.ceil((x.target - x.saved) / months))}</b> شهريًا لتصل ${D.rel(x.deadline)}</div>`;
       }
       return `<div class="card goal-card" style="--c:${x.color}">
         <div class="flex"><span style="font-size:1.6rem">${x.icon || '💰'}</span><div class="grow"><div class="bold">${esc(x.name)}</div><div class="tiny muted">${x.deadline ? 'الموعد: ' + D.fmt(x.deadline, true) : 'بدون موعد محدد'}</div></div>
@@ -213,8 +213,8 @@ function finDebts() {
   const borrowed = sum(list.filter(x => x.type === 'borrowed' && !x.paid), x => x.amount);
   return `
     <div class="grid g-3 mb">
-      <div class="card stat"><div class="si" style="--c:var(--good)">📥</div><div><div class="sv">${money(lent, false)}</div><div class="sl">لي عند الآخرين</div></div></div>
-      <div class="card stat"><div class="si" style="--c:var(--bad)">📤</div><div><div class="sv">${money(borrowed, false)}</div><div class="sl">عليّ للآخرين</div></div></div>
+      <div class="card stat"><div><div class="sv">${money(lent, false)}</div><div class="sl">لي عند الآخرين</div></div></div>
+      <div class="card stat"><div><div class="sv">${money(borrowed, false)}</div><div class="sl">عليّ للآخرين</div></div></div>
       <div class="card stat" style="justify-content:space-between"><div><div class="sv">${money(lent - borrowed)}</div><div class="sl">الصافي</div></div><button class="btn btn-sm btn-primary" data-act="debt-new">${ic('plus')} تسجيل دين</button></div>
     </div>
     <div class="tbl-wrap">
@@ -312,7 +312,7 @@ App.on('saving-move', el => {
   const x = byId(App.state.savings, el.dataset.id), dir = Number(el.dataset.dir);
   App.form({
     title: dir > 0 ? 'إيداع في «' + x.name + '»' : 'سحب من «' + x.name + '»', size: 'narrow',
-    fields: [{ name: 'a', label: 'المبلغ', type: 'number', required: true, min: 0 }, { name: 'log', label: dir > 0 ? 'سجّله كمصروف (تحويل للادخار)' : 'سجّله كدخل', type: 'switch', value: false }],
+    fields: [{ name: 'a', label: 'المبلغ', type: 'number', required: true, min: 0 }, { name: 'log', label: dir > 0 ? 'سجّله مصروفًا (تحويلًا إلى الادخار)' : 'سجّله دخلًا', type: 'switch', value: false }],
     onSubmit({ a, log }) {
       if (!(a > 0)) return false;
       App.update(s => {

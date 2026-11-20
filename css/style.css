@@ -216,7 +216,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
   border-bottom: 1px solid var(--border);
 }
 .top-title { flex: 1; min-width: 0; }
-.top-title h1 { font-size: 1.25rem; }
+.top-title h1 { font-size: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .top-date { font-size: .8rem; color: var(--muted); }
 .top-actions { display: flex; align-items: center; gap: 8px; }
 #view { padding: 24px 26px 60px; max-width: 1440px; width: 100%; outline: none; }
@@ -1047,6 +1047,11 @@ input[type=date], input[type=time] { direction: rtl; }
   .cal { gap: 4px; }
   .prayers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .trow .tacts { display: none; }
+  .daytbl tr.empty-h { display: none; }
+  /* العنوان ظاهر في الشريط العلوي، فلا يتكرر في الصفحة */
+  .page-h h2:not(.keep) { display: none; }
+  .page-h .sub { margin-top: 0; }
+  .page-h { margin-bottom: 12px; }
   .grid.sum-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .sum-row .stat { flex-direction: column; gap: 6px; text-align: center; padding: 12px 6px; }
   .sum-row .stat .si { width: 46px; height: 46px; }
@@ -1095,3 +1100,22 @@ input[type=date], input[type=time] { direction: rtl; }
   width: 8px; height: 8px; border-radius: 99px; background: var(--c);
   box-shadow: 0 0 0 2px var(--surface);
 }
+
+/* ---------- شريط الملخص: أرقام الصفحة في سطر واحد بدل بطاقات متفرقة ---------- */
+.sumbar { display: flex; align-items: center; gap: 10px 22px; flex-wrap: wrap; padding: 12px 16px; }
+.sumbar .sb-i { font-size: .84rem; color: var(--muted); white-space: nowrap; }
+.sumbar .sb-i b { font-size: 1.05rem; color: var(--text); margin-inline-end: 4px; }
+.sumbar .sb-i.grow { flex: 1 1 160px; min-width: 140px; }
+.sumbar .sb-i.grow .bar { margin-top: 6px; }
+.sumbar .sb-i.bad, .sumbar .sb-i.bad b { color: var(--bad); }
+
+/* ---------- المبدّل بين القسمين المجموعين ---------- */
+.subnav { display: flex; gap: 4px; padding: 4px; margin-bottom: 16px; border-radius: 14px; background: var(--surface); border: 1px solid var(--border); }
+.subnav button { flex: 1; border: 0; background: none; padding: 9px 10px; border-radius: 10px; color: var(--muted); font-weight: 700; cursor: pointer; }
+.subnav button.on { background: var(--ac-soft); color: var(--ac); }
+
+/* ---------- اختيار الأقسام الظاهرة ---------- */
+.vis-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.vis-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--border-2); background: none; color: var(--muted); cursor: pointer; font-size: .86rem; }
+.vis-chip .ic { width: 14px; height: 14px; }
+.vis-chip.on { background: var(--ac-soft); border-color: transparent; color: var(--ac); font-weight: 700; }

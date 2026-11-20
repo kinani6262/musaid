@@ -101,7 +101,7 @@ App.views.habits = {
     const isThisWeek = days.includes(today);
     return `
       <div class="page-h">
-        <div><h2>${ic('flame', 'ic-lg')} صناعة العادات</h2><div class="sub">«أحبّ الأعمال إلى الله أدومها وإن قلّ» — ابدأ صغيرًا واستمر</div></div>
+        <div><h2>${ic('flame', 'ic-lg')} صناعة العادات</h2><div class="sub hide-mobile">«أحبّ الأعمال إلى الله أدومها وإن قلّ» — ابدأ صغيرًا واستمر</div></div>
         <div class="actions">
           <button class="icon-btn" data-act="hab-week" data-n="-7">${ic('prev')}</button>
           <button class="btn btn-sm ${isThisWeek ? 'btn-soft' : ''}" data-act="hab-week" data-n="0">هذا الأسبوع</button>
@@ -111,9 +111,9 @@ App.views.habits = {
       </div>
       <div class="grid g-4 keep-2 mb">
         <div class="card stat">${App.ring(pct(doneToday, due.length), { size: 52, stroke: 6, label: pct(doneToday, due.length) + '%', color: '#f97316' })}<div><div class="sv">${doneToday}/${due.length}</div><div class="sl">أُنجزت اليوم</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#f97316">🔥</div><div><div class="sv">${bestStreak}</div><div class="sl">أطول سلسلة حالية</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#22c55e">📈</div><div><div class="sv">${avgRate}%</div><div class="sl">الالتزام آخر 30 يومًا</div></div></div>
-        <div class="card stat"><div class="si" style="--c:#7c5cff">🌱</div><div><div class="sv">${list.length}</div><div class="sl">عادات قيد البناء</div></div></div>
+        <div class="card stat"><div><div class="sv">${bestStreak}</div><div class="sl">أطول سلسلة حالية</div></div></div>
+        <div class="card stat"><div><div class="sv">${avgRate}%</div><div class="sl">الالتزام آخر 30 يومًا</div></div></div>
+        <div class="card stat"><div><div class="sv">${list.length}</div><div class="sl">عادات قيد البناء</div></div></div>
       </div>
       ${list.length ? `
       <div class="tbl-wrap mb">
@@ -126,7 +126,7 @@ App.views.habits = {
         <div class="card-h"><div class="card-t">${ic('sparkles')} أفكار لعادات نافعة</div><span class="small muted">اضغط لإضافتها مباشرة</span></div>
         <div class="tpl-grid">${HABIT_TEMPLATES.filter(t => !list.find(h => h.name === t.name)).map((t, i) => `<button class="tpl" data-act="habit-tpl" data-i="${HABIT_TEMPLATES.indexOf(t)}"><span class="te">${t.icon}</span>${esc(t.name)}</button>`).join('')}</div>
       </div>
-      ${archived.length ? `<div class="card mt"><div class="card-h"><div class="card-t">🗄️ عادات مؤرشفة</div></div>${archived.map(h => `<div class="trow"><span>${h.icon}</span><div class="grow">${esc(h.name)} <span class="tiny muted">· ${Habits.total(h)} مرة</span></div><button class="btn btn-sm btn-ghost" data-act="habit-unarchive" data-id="${h.id}">استعادة</button></div>`).join('')}</div>` : ''}`;
+      ${archived.length ? `<div class="card mt"><div class="card-h"><div class="card-t">عادات مؤرشفة</div></div>${archived.map(h => `<div class="trow"><span>${h.icon}</span><div class="grow">${esc(h.name)} <span class="tiny muted">· ${Habits.total(h)} مرة</span></div><button class="btn btn-sm btn-ghost" data-act="habit-unarchive" data-id="${h.id}">استعادة</button></div>`).join('')}</div>` : ''}`;
   },
 };
 
@@ -228,10 +228,10 @@ App.on('habit-detail', el => {
     title: h.name, icon: h.icon, size: 'wide',
     body: `
       <div class="grid g-4 keep-2 mb">
-        <div class="stat"><div class="si" style="--c:${h.color}">🔥</div><div><div class="sv">${Habits.streak(h)}</div><div class="sl">السلسلة الحالية</div></div></div>
-        <div class="stat"><div class="si" style="--c:${h.color}">🏆</div><div><div class="sv">${Habits.best(h)}</div><div class="sl">أطول سلسلة</div></div></div>
-        <div class="stat"><div class="si" style="--c:${h.color}">✅</div><div><div class="sv">${Habits.total(h)}</div><div class="sl">مرات الإنجاز</div></div></div>
-        <div class="stat"><div class="si" style="--c:${h.color}">📈</div><div><div class="sv">${Habits.rate(h, 30)}%</div><div class="sl">التزام 30 يومًا</div></div></div>
+        <div class="stat"><div><div class="sv">${Habits.streak(h)}</div><div class="sl">السلسلة الحالية</div></div></div>
+        <div class="stat"><div><div class="sv">${Habits.best(h)}</div><div class="sl">أطول سلسلة</div></div></div>
+        <div class="stat"><div><div class="sv">${Habits.total(h)}</div><div class="sl">مرات الإنجاز</div></div></div>
+        <div class="stat"><div><div class="sv">${Habits.rate(h, 30)}%</div><div class="sl">التزام 30 يومًا</div></div></div>
       </div>
       <div class="lbl mb">سجل آخر ${weeks} أسبوعًا</div>
       <div class="heat" style="--c:${h.color}">${cells}</div>

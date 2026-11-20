@@ -63,7 +63,7 @@ App.views.calendar = {
     return `
       <div class="page-h">
         <div>
-          <h2>${ic('calendar', 'ic-lg')} ${D.monthName(mk)}</h2>
+          <h2 class="keep">${ic('calendar', 'ic-lg')} ${D.monthName(mk)}</h2>
           <div class="sub">${S().showHijri ? D.hijriMonth(start > mk + '-01' ? start : mk + '-01') + ' – ' + D.hijriMonth(end) : ''}</div>
         </div>
         <div class="actions">

@@ -68,7 +68,7 @@ const Push = {
       App.save();
       this._on = true;
       const ok = await this.sync(true);
-      App.toast(ok ? 'تم تفعيل التنبيهات على هذا الجهاز ✓' : 'فُعّلت، لكن تعذّر الوصول إلى خادم التنبيهات — سيُعاد المحاولة تلقائيًا', { icon: ok ? '🔔' : '⚠️', ms: 6000 });
+      App.toast(ok ? 'تم تفعيل التنبيهات على هذا الجهاز ✓' : 'فُعّلت، لكن تعذّر الوصول إلى خادم التنبيهات — ستُعاد المحاولة تلقائيًا', { icon: ok ? '🔔' : '⚠️', ms: 6000 });
     } catch (e) {
       App.toast('تعذّر تفعيل التنبيهات: ' + (e && e.message || e), { icon: '⚠️', ms: 7000 });
     }
@@ -91,7 +91,7 @@ const Push = {
     try {
       const r = await fetch(cfg.url + '/test', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sub: sub.toJSON() }) });
       const j = await r.json();
-      App.toast(j.ok ? 'أُرسل تنبيه تجريبي من الخادم — أغلق التطبيق إن أردت وانتظر ثوانيَ' : 'رفضت خدمة الإشعارات التنبيه (' + j.status + ')', { icon: j.ok ? '📨' : '⚠️', ms: 7000 });
+      App.toast(j.ok ? 'أُرسل تنبيه تجريبي من الخادم — أغلق التطبيق إن شئت وانتظر بضع ثوانٍ' : 'رفضت خدمة الإشعارات التنبيه (' + j.status + ')', { icon: j.ok ? '📨' : '⚠️', ms: 7000 });
     } catch (e) { App.toast('تعذّر الوصول إلى خادم التنبيهات', { icon: '⚠️' }); }
   },
 

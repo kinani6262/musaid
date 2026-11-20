@@ -182,6 +182,7 @@ App.defaults = () => ({
     showHijri: true,
     notify: true,
     notifyMinutes: 10,
+    hiddenViews: [],
     sound: true,
     autoCarry: false,
     prayer: { show: true, city: 'mecca', lat: 21.4225, lng: 39.8262, method: 'makkah', asr: 1, inDay: true, remind: false },
@@ -371,7 +372,7 @@ App.render = function (fresh = false) {
   $('#view-title').textContent = v.title;
   document.title = v.title + ' — مُساعِد';
   el.classList.toggle('no-anim', !fresh);
-  el.innerHTML = v.render(App.params);
+  el.innerHTML = (App.subnav ? App.subnav(App.view) : '') + v.render(App.params);
   App.mountCharts();
   v.after && v.after(App.params);
   App.renderChrome && App.renderChrome();

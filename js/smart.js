@@ -455,7 +455,7 @@ App.insights = function () {
   if (unsched.length >= 2) out.push({ e: '✨', c: '#a855f7', t: `${tasksAr(unsched.length)} بلا وقت محدد`, s: 'جرّب «رتّب يومي» لتوزيعها على أوقات فراغك', view: 'day' });
 
   const tomorrowTasks = T.on(D.add(today, 1)).filter(t => !T.recurring(t));
-  if (tomorrowTasks.length) out.push({ e: '📅', c: '#6366f1', t: `غدًا: ${tomorrowTasks.slice(0, 2).map(t => t.title).join('، ')}${tomorrowTasks.length > 2 ? ' و' + (tomorrowTasks.length - 2) + ' أخرى' : ''}`, s: 'استعد مبكرًا', view: 'calendar' });
+  if (tomorrowTasks.length) out.push({ e: '📅', c: '#6366f1', t: `غدًا: ${tomorrowTasks.slice(0, 2).map(t => t.title).join('، ')}${tomorrowTasks.length > 2 ? ' و' + (tomorrowTasks.length - 2) + ' أخرى' : ''}`, s: 'استعدّ مبكرًا', view: 'calendar' });
 
   s.subscriptions.filter(x => x.active !== false).forEach(x => {
     const d = D.diff(today, x.next);
@@ -482,7 +482,7 @@ App.insights = function () {
     if (!b) return;
     const p = pct(spent[c.id] || 0, b);
     if (p >= 100) out.push({ e: '🚨', c: 'var(--bad)', t: `تجاوزت ميزانية ${c.name}`, s: `${p}% من الميزانية`, view: 'finance', params: { tab: 'budget' } });
-    else if (p >= 80) out.push({ e: '💸', c: 'var(--warn)', t: `اقتربت من حد ميزانية ${c.name}`, s: `استهلكت ${p}%`, view: 'finance', params: { tab: 'budget' } });
+    else if (p >= 80) out.push({ e: '💸', c: 'var(--warn)', t: `اقتربت من حدّ ميزانية ${c.name}`, s: `استهلكت ${p}%`, view: 'finance', params: { tab: 'budget' } });
   });
   const totalBudget = sum(Object.values(s.budgets));
   if (totalBudget) {
@@ -754,7 +754,7 @@ App.search = function () {
     if (!q) { res.innerHTML = `<div class="muted small">ابدأ بالكتابة… (اختصار: Ctrl + K)</div>`; return; }
     const s = App.state, out = [];
     const has = t => String(t || '').toLowerCase().includes(q);
-    s.tasks.filter(t => has(t.title) || has(t.notes)).slice(0, 12).forEach(t => out.push({ e: T.cat(t.cat).icon, t: t.title, s: t.date ? 'مهمة · ' + D.fmt(t.date) : 'مهمة · صندوق المهام', go: () => App.taskForm(t) }));
+    s.tasks.filter(t => has(t.title) || has(t.notes)).slice(0, 12).forEach(t => out.push({ e: T.cat(t.cat).icon, t: t.title, s: T.recurring(t) ? 'مهمة متكررة' + (t.time ? ' · ' + D.time(t.time) : '') : t.date ? 'مهمة · ' + D.fmt(t.date) : 'مهمة · صندوق المهام', go: () => App.taskForm(t) }));
     s.notes.filter(n => has(n.title) || has(n.text)).slice(0, 8).forEach(n => out.push({ e: '🗒️', t: n.title || n.text.slice(0, 60), s: 'ملاحظة', go: () => { App.go('journal', { tab: 'notes' }); } }));
     Object.entries(s.journal).filter(([k, j]) => has(j.text)).slice(0, 6).forEach(([k, j]) => out.push({ e: '📔', t: j.text.slice(0, 70), s: 'يوميات · ' + D.fmt(k), go: () => App.go('journal', { tab: 'diary', date: k }) }));
     s.transactions.filter(t => has(t.note)).slice(0, 8).forEach(t => out.push({ e: t.type === 'income' ? '💰' : '💸', t: (t.note || '') + ' — ' + money(t.amount), s: 'عملية مالية · ' + D.fmt(t.date), go: () => App.go('finance', { tab: 'tx' }) }));

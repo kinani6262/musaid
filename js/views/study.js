@@ -41,7 +41,7 @@ App.timerComplete = function () {
     App.notify({ icon: '🎉', title: 'أحسنت! انتهت جلسة التركيز', body: `سُجّلت ${min} دقيقة${tm.label ? ' — ' + tm.label : ''}. خذ استراحة`, view: 'study', params: { tab: 'timer' } });
     tm.mode = tm.cycles % (S().pomodoro.every || 4) === 0 ? 'long' : 'short';
   } else {
-    App.notify({ icon: '⏰', title: 'انتهت الاستراحة', body: 'هيا لجلسة تركيز جديدة', view: 'study', params: { tab: 'timer' } });
+    App.notify({ icon: '⏰', title: 'انتهت الاستراحة', body: 'هيّا إلى جلسة تركيز جديدة', view: 'study', params: { tab: 'timer' } });
     tm.mode = 'focus';
   }
   tm.remaining = modeLen(tm.mode);
@@ -90,7 +90,7 @@ App.views.study = {
     const body = { overview: stOverview, timer: stTimer, exams: stExams, tasks: stTasks, table: stTable, subjects: stSubjects }[tab]();
     return `
       <div class="page-h">
-        <div><h2>${ic('study', 'ic-lg')} الدراسة</h2><div class="sub">«وَقُل رَّبِّ زِدْنِي عِلْمًا»</div></div>
+        <div><h2>${ic('study', 'ic-lg')} الدراسة</h2><div class="sub hide-mobile">«وَقُل رَّبِّ زِدْنِي عِلْمًا»</div></div>
         <div class="actions">
           <button class="btn btn-sm" data-act="session-new">${ic('plus')} تسجيل جلسة</button>
           <button class="btn btn-sm btn-primary" data-act="study-tab" data-id="timer">${ic('timer')} ابدأ التركيز</button>
@@ -117,10 +117,10 @@ function stOverview() {
   const pending = s.assignments.filter(a => !a.done).sort((a, b) => (a.due || '9').localeCompare(b.due || '9')).slice(0, 5);
   return `
     <div class="grid g-4 keep-2 mb">
-      <div class="card stat"><div class="si" style="--c:#a855f7">⏱️</div><div><div class="sv">${durText(todayMin)}</div><div class="sl">دراسة اليوم</div></div></div>
-      <div class="card stat"><div class="si" style="--c:#6366f1">📅</div><div><div class="sv">${hoursText(weekMin)} س</div><div class="sl">هذا الأسبوع</div></div></div>
-      <div class="card stat"><div class="si" style="--c:#f97316">🔥</div><div><div class="sv">${streak}</div><div class="sl">أيام متتالية من الدراسة</div></div></div>
-      <div class="card stat"><div class="si" style="--c:#22c55e">📎</div><div><div class="sv">${s.assignments.filter(a => !a.done).length}</div><div class="sl">واجبات متبقية</div></div></div>
+      <div class="card stat"><div><div class="sv">${durText(todayMin)}</div><div class="sl">دراسة اليوم</div></div></div>
+      <div class="card stat"><div><div class="sv">${hoursText(weekMin)} س</div><div class="sl">هذا الأسبوع</div></div></div>
+      <div class="card stat"><div><div class="sv">${streak}</div><div class="sl">أيام متتالية من الدراسة</div></div></div>
+      <div class="card stat"><div><div class="sv">${s.assignments.filter(a => !a.done).length}</div><div class="sl">واجبات متبقية</div></div></div>
     </div>
     <div class="grid g-2 mb">
       ${nextExam ? (() => {
@@ -134,13 +134,13 @@ function stOverview() {
         </div>`;
       })() : `<div class="card">${App.empty('🎓', 'لا امتحانات قادمة', 'أضف مواعيد امتحاناتك ليصلك عدّ تنازلي وتذكير قبلها', `<button class="btn btn-sm btn-soft" data-act="exam-new">${ic('plus')} امتحان</button>`)}</div>`}
       <div class="card">
-        <div class="card-h"><div class="card-t">📊 دقائق الدراسة — آخر 14 يومًا</div></div>
+        <div class="card-h"><div class="card-t">دقائق الدراسة — آخر 14 يومًا</div></div>
         ${App.chart({ data: chart, series: [{ name: 'دقائق', color: 'var(--s7)' }], height: 170, fmt: v => String(Math.round(v)) })}
       </div>
     </div>
     <div class="grid g-2">
       <div class="card">
-        <div class="card-h"><div class="card-t">📚 المواد هذا الأسبوع</div><button class="btn btn-sm btn-ghost" data-act="study-tab" data-id="subjects">إدارة المواد</button></div>
+        <div class="card-h"><div class="card-t">المواد هذا الأسبوع</div><button class="btn btn-sm btn-ghost" data-act="study-tab" data-id="subjects">إدارة المواد</button></div>
         ${s.subjects.length ? s.subjects.map(sub => {
           const m = sum(s.sessions.filter(x => x.subject === sub.id && x.date >= wk[0] && x.date <= wk[6]), x => x.min);
           const goal = (sub.goal || 0) * 60;
@@ -148,7 +148,7 @@ function stOverview() {
         }).join('') : App.empty('📚', 'أضف موادك الدراسية', '', `<button class="btn btn-sm btn-soft" data-act="subject-new">${ic('plus')} مادة</button>`)}
       </div>
       <div class="card">
-        <div class="card-h"><div class="card-t">📎 واجبات قريبة</div><button class="btn btn-sm btn-ghost" data-act="study-tab" data-id="tasks">الكل</button></div>
+        <div class="card-h"><div class="card-t">واجبات قريبة</div><button class="btn btn-sm btn-ghost" data-act="study-tab" data-id="tasks">الكل</button></div>
         ${pending.length ? pending.map(assignRow).join('') : `<div class="muted small">لا واجبات معلّقة 🎉</div>`}
       </div>
     </div>`;
@@ -185,14 +185,14 @@ function stTimer() {
       </div>
       <div class="col" style="gap:16px">
         <div class="card">
-          <div class="card-h"><div class="card-t">🍅 جلسات اليوم</div><span class="badge ac">${todaySessions.length}</span></div>
+          <div class="card-h"><div class="card-t">جلسات اليوم</div><span class="badge ac">${todaySessions.length}</span></div>
           <div class="flex flex-wrap mb" style="gap:4px">${todaySessions.map(() => '<span style="font-size:1.3rem">🍅</span>').join('') || '<span class="muted small">لم تبدأ بعد — الجلسة الأولى هي الأصعب!</span>'}</div>
           ${todaySessions.slice().reverse().map(x => { const sub = subjOf(x.subject); return `<div class="trow"><span class="subj-dot" style="--c:${sub.color}"></span><div class="grow"><div class="small bold">${esc(sub.name)}${x.note ? ' — ' + esc(x.note) : ''}</div></div><span class="small tnum">${durText(x.min)}</span><button class="icon-btn sm" data-act="session-del" data-id="${x.id}">${ic('x')}</button></div>`; }).join('')}
           <div class="flex between mt-s small"><span class="muted">المجموع</span><b>${durText(sum(todaySessions, x => x.min))}</b></div>
         </div>
         <div class="card">
-          <div class="card-t mb">💡 نصائح للتركيز</div>
-          <div class="small text-2" style="line-height:2">• أبعد الهاتف عن متناول يدك<br>• حدّد هدفًا صغيرًا واضحًا لكل جلسة<br>• في الاستراحة: تحرك واشرب ماء، لا تتصفح<br>• ابدأ بالمادة الأصعب حين يكون ذهنك صافيًا</div>
+          <div class="card-t mb">نصائح للتركيز</div>
+          <div class="small text-2" style="line-height:2">• أبعد الهاتف عن متناول يدك<br>• حدّد هدفًا صغيرًا واضحًا لكل جلسة<br>• في الاستراحة: تحرّك واشرب ماءً، ولا تتصفّح الهاتف<br>• ابدأ بالمادة الأصعب حين يكون ذهنك صافيًا</div>
         </div>
       </div>
     </div>`;
@@ -217,7 +217,7 @@ function stExams() {
         <div class="flex"><button class="btn btn-sm btn-soft" data-act="exam-plan" data-id="${x.id}" data-tip="ينشئ مهام مراجعة موزّعة على الأيام المتبقية">${ic('sparkles')} خطة مراجعة</button><span class="grow"></span><button class="icon-btn sm" data-act="exam-edit" data-id="${x.id}">${ic('edit')}</button></div>
       </div>`;
     }).join('')}</div>` : `<div class="card mb">${App.empty('📝', 'لا امتحانات قادمة', 'أضف امتحاناتك مع المواضيع المطلوبة لتتابع تقدم مراجعتك')}</div>`}
-    ${past.length ? `<div class="card"><div class="card-t mb">🗂️ امتحانات سابقة</div>
+    ${past.length ? `<div class="card"><div class="card-t mb">امتحانات سابقة</div>
       <div class="tbl-wrap"><table class="tbl"><thead><tr><th>الامتحان</th><th>المادة</th><th>التاريخ</th><th>الدرجة</th><th></th></tr></thead><tbody>
       ${past.map(x => `<tr><td>${esc(x.title)}</td><td>${esc(subjOf(x.subject).name)}</td><td class="num">${D.short(x.date)}</td><td class="bold">${esc(x.grade || '—')}</td><td class="acts"><button class="icon-btn sm" data-act="exam-edit" data-id="${x.id}">${ic('edit')}</button></td></tr>`).join('')}
       </tbody></table></div></div>` : ''}`;
@@ -234,9 +234,9 @@ function stTasks() {
   const open = s.assignments.filter(a => !a.done).sort((a, b) => (a.due || '9').localeCompare(b.due || '9'));
   const done = s.assignments.filter(a => a.done);
   return `<div class="grid g-2">
-    <div class="card"><div class="card-h"><div class="card-t">📎 واجبات ومهام دراسية</div><button class="btn btn-sm btn-primary" data-act="assign-new">${ic('plus')} واجب</button></div>
+    <div class="card"><div class="card-h"><div class="card-t">واجبات ومهام دراسية</div><button class="btn btn-sm btn-primary" data-act="assign-new">${ic('plus')} واجب</button></div>
       ${open.length ? open.map(assignRow).join('') : App.empty('🎉', 'لا واجبات معلّقة', 'أحسنت!')}</div>
-    <div class="card"><div class="card-h"><div class="card-t">✅ منجزة</div><span class="badge">${done.length}</span></div>
+    <div class="card"><div class="card-h"><div class="card-t">منجزة</div><span class="badge">${done.length}</span></div>
       ${done.length ? done.slice(-15).reverse().map(assignRow).join('') : `<div class="muted small">ستظهر هنا الواجبات المنجزة.</div>`}</div>
   </div>`;
 }
@@ -301,7 +301,7 @@ App.examForm = function (x = null, preset = {}) {
       { name: 'title', label: 'عنوان الامتحان', required: true, placeholder: 'مثال: الاختبار النهائي' },
       { name: 'subject', label: 'المادة', type: 'select', options: subjOptions() },
       { type: 'row', fields: [{ name: 'date', label: 'التاريخ', type: 'date', required: true }, { name: 'time', label: 'الوقت', type: 'time' }, { name: 'place', label: 'المكان' }] },
-      { name: 'topicsText', label: 'المواضيع المطلوبة للمراجعة (سطر لكل موضوع)', type: 'textarea', rows: 4, placeholder: 'الفصل الأول\nالفصل الثاني\nحل نماذج سابقة' },
+      { name: 'topicsText', label: 'المواضيع المطلوبة للمراجعة (سطر لكل موضوع)', type: 'textarea', rows: 4, placeholder: 'الفصل الأول\nالفصل الثاني\nحلّ نماذج سابقة' },
       { name: 'grade', label: 'الدرجة (بعد الامتحان)' },
     ],
     onSubmit(f) {
@@ -331,7 +331,7 @@ App.on('exam-plan', el => {
         const day = D.add(today, Math.min(slots - 1, Math.floor((i * slots) / items.length)));
         s.tasks.push({ id: uid(), title: `مراجعة: ${txt} (${x.title})`, date: day, time: '', dur: 60, pri: 'high', cat: 'study', repeat: 'none', days: [], remind: false, notes: '', done: false, doneDates: {}, created: today });
       });
-      if (days > 2) s.tasks.push({ id: uid(), title: `مراجعة شاملة وحل نماذج: ${x.title}`, date: D.add(x.date, -1), time: '', dur: 120, pri: 'high', cat: 'study', repeat: 'none', days: [], remind: false, notes: '', done: false, doneDates: {}, created: today });
+      if (days > 2) s.tasks.push({ id: uid(), title: `مراجعة شاملة وحلّ نماذج: ${x.title}`, date: D.add(x.date, -1), time: '', dur: 120, pri: 'high', cat: 'study', repeat: 'none', days: [], remind: false, notes: '', done: false, doneDates: {}, created: today });
     });
   }, { ok: 'أنشئ الخطة' });
 });
