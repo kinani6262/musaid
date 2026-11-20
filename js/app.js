@@ -41,7 +41,7 @@ function navBadge(id) {
 App.renderChrome = function () {
   const cur = App.view;
   $('#nav').innerHTML = NAV.map(g => `${g.g ? `<div class="nav-group-t">${g.g}</div>` : ''}${g.items.map(it => `
-    <button class="nav-item ${cur === it.id ? 'on' : ''}" style="--c:${it.c}" data-act="nav" data-view="${it.id}">
+    <button class="nav-item ${cur === it.id ? 'on' : ''}" data-act="nav" data-view="${it.id}">
       <span class="ni">${ic(it.i)}</span><span>${it.t}</span><span class="nb">${navBadge(it.id)}</span>
     </button>`).join('')}`).join('');
   const st = T.stats(D.today());
@@ -50,13 +50,13 @@ App.renderChrome = function () {
       <div class="flex between small"><span class="muted">إنجاز اليوم</span><b>${st.pct}%</b></div>
       ${App.bar(st.pct, '', 'thin')}
     </div>
-    <button class="nav-item ${cur === 'settings' ? 'on' : ''}" style="--c:#64748b" data-act="nav" data-view="settings"><span class="ni">${ic('settings')}</span><span>الإعدادات</span></button>`;
+    <button class="nav-item ${cur === 'settings' ? 'on' : ''}" data-act="nav" data-view="settings"><span class="ni">${ic('settings')}</span><span>الإعدادات</span></button>`;
   const unread = App.state.inbox.filter(x => !x.read).length;
   $('#btn-bell').innerHTML = ic('bell') + (unread ? `<span class="dot">${unread > 9 ? '9+' : unread}</span>` : '');
   $('#btn-theme').innerHTML = ic(document.documentElement.dataset.theme === 'dark' ? 'sun' : 'moon');
   const today = D.today();
   $('#top-date').textContent = D.fmt(today) + (S().showHijri ? ' · ' + D.hijri(today) : '');
-  const bn = [['dashboard', 'home', 'الرئيسية'], ['day', 'day', 'اليوم'], ['calendar', 'calendar', 'التقويم'], ['finance', 'wallet', 'المال'], ['_more', 'menu', 'المزيد']];
+  const bn = [['dashboard', 'home', 'الرئيسية'], ['day', 'day', 'اليوم'], ['week', 'week', 'الأسبوع'], ['habits', 'flame', 'العادات'], ['_more', 'menu', 'المزيد']];
   $('#bottomnav').innerHTML = bn.map(([id, i, t]) => `<button class="bn ${cur === id ? 'on' : ''}" data-act="${id === '_more' ? 'toggle-sidebar' : 'nav'}" data-view="${id}">${ic(i)}<span>${t}</span></button>`).join('');
   App.localize($('#sidebar'));
   App.localize($('#topbar'));
@@ -158,8 +158,7 @@ App.onboard = function () {
       if (v.demo) App.loadDemo();
       else { App.save(); App.render(true); }
       setTimeout(() => {
-        App.toast(`أهلًا ${v.name || ''}! اضغط N في أي وقت لإضافة سريعة`, { icon: '🎉', ms: 5000 });
-        if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().then(() => App.renderChrome());
+        App.toast(`أهلًا ${v.name || ''}!` + (matchMedia('(max-width: 960px)').matches ? ' زر + للإضافة السريعة' : ' اضغط N في أي وقت لإضافة سريعة'), { icon: '🎉', ms: 5000 });
       }, 400);
     },
   });
@@ -204,7 +203,10 @@ App.init = function () {
   }, 15000);
   window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (v && v !== App.view && App.views[v]) App.go(v); });
   window.addEventListener('storage', e => { if (e.key === STORE_KEY) { App.load(); App.applyTheme(); App.refresh(); } });
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) App.checkReminders(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { App.checkReminders(); Push.sync(); } });
+  // التنبيهات والتطبيق مغلق: معرفة حالة هذا الجهاز، وتحديث قائمة الخادم عند الفتح
+  Push.refreshState().then(() => Push.sync());
+  window.addEventListener('online', () => Push.sync());
   if (window.matchMedia) matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { if (S().theme === 'auto') { App.applyTheme(); App.refresh(); } });
 };
 

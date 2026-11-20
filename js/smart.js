@@ -75,21 +75,17 @@ const T = {
   row(t, k, { showDate = false } = {}) {
     const c = T.cat(t.cat);
     const done = k ? T.isDone(t, k) : !!t.done;
+    // سطر واحد هادئ: الوقت · المدة · التصنيف، والتفاصيل الباقية عند فتح المهمة
     const meta = [];
-    if (showDate && t.date) meta.push(`<span>📅 ${D.rel(t.date)}</span>`);
-    if (t.time) meta.push(`<span>🕒 ${D.time(t.time)}</span>`);
-    if (t.dur && t.time) meta.push(`<span>⏱️ ${durText(t.dur)}</span>`);
-    meta.push(`<span class="chip c" style="--c:${c.color}">${c.icon} ${esc(c.name)}</span>`);
-    if (t.pri === 'high') meta.push(`<span class="chip c pri-high">عالية</span>`);
-    if (T.recurring(t)) meta.push('<span>🔁</span>');
-    if (t.notes) meta.push('<span>📝</span>');
+    if (showDate && t.date) meta.push(D.rel(t.date));
+    if (t.time) meta.push(D.time(t.time));
+    if (t.dur && t.time) meta.push(durText(t.dur));
+    meta.push(`<span class="tcat" style="--c:${c.color}">${esc(c.name)}</span>`);
+    if (t.pri === 'high') meta.push('<span class="pri-high-t">أولوية عالية</span>');
     return `<div class="trow ${done ? 'done' : ''}">
       ${App.chk(done, 'task-toggle', `data-id="${t.id}" data-date="${k || t.date || ''}"`, c.color, 'round')}
-      <div class="tt" data-act="task-edit" data-id="${t.id}"><div class="tn">${esc(t.title)}</div><div class="tm">${meta.join('')}</div></div>
-      <div class="tacts">
-        ${!done ? `<button class="icon-btn sm" data-act="focus-task" data-id="${t.id}" data-tip="ابدأ جلسة تركيز">${ic('timer')}</button>` : ''}
-        <button class="icon-btn sm" data-act="task-edit" data-id="${t.id}" data-tip="تعديل">${ic('edit')}</button>
-      </div>
+      <div class="tt" data-act="task-edit" data-id="${t.id}"><div class="tn">${esc(t.title)}</div><div class="tm">${meta.join('<i>·</i>')}</div></div>
+      ${!done ? `<div class="tacts"><button class="icon-btn sm" data-act="focus-task" data-id="${t.id}" data-tip="ابدأ جلسة تركيز">${ic('timer')}</button></div>` : ''}
     </div>`;
   },
 };
@@ -517,7 +513,7 @@ App.checkReminders = function () {
   const fire = (key, payload) => {
     if (s.notified[key]) return;
     s.notified[key] = Date.now();
-    batch.push(payload);
+    batch.push(Object.assign({ tag: key }, payload));
   };
   // ملخص اليوم
   if (now >= S().dayStart * 60) {
@@ -539,7 +535,7 @@ App.checkReminders = function () {
   T.on(today).forEach(t => {
     if (!t.time || t.remind === false || T.isDone(t, today)) return;
     const tm = D.toMin(t.time), before = Number(S().notifyMinutes) || 10;
-    if (now >= tm - before && now <= tm + 5) fire('t:' + t.id + ':' + today, { icon: '⏰', title: tm - now > 0 ? `بعد ${tm - now} دقيقة` : 'حان الوقت', body: t.title, view: 'day' });
+    if (now >= tm - before && now <= tm + 5) fire('t:' + t.id + ':' + today, { icon: '⏰', title: tm - now > 0 ? 'بعد ' + minAr(tm - now) : 'حان الوقت', body: t.title, view: 'day' });
   });
   // الاشتراكات
   s.subscriptions.filter(x => x.active !== false).forEach(x => {

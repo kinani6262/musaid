@@ -241,7 +241,7 @@ App.chime = function (kind = 'soft') {
 };
 
 /* ---------- مركز التنبيهات ---------- */
-App.notify = function ({ title, body = '', icon = '🔔', view = null, params = null, silent = false, system = true }) {
+App.notify = function ({ title, body = '', icon = '🔔', view = null, params = null, silent = false, system = true, tag = null }) {
   const s = App.state;
   s.inbox.unshift({ id: uid(), title, body, icon, view, params, time: Date.now(), read: false });
   s.inbox = s.inbox.slice(0, 60);
@@ -250,14 +250,14 @@ App.notify = function ({ title, body = '', icon = '🔔', view = null, params = 
     App.toast(title + (body ? ' — ' + body : ''), { icon, ms: 6000 });
     App.chime();
   }
-  if (system && S().notify) App.sysNotify(title, body, view, params);
+  if (system && S().notify) App.sysNotify(title, body, view, params, tag);
   App.renderChrome && App.renderChrome();
 };
 
 /** إشعار النظام: عبر عامل الخدمة إن وُجد (وهو الطريق الوحيد في أندرويد)، وإلا مباشرة */
-App.sysNotify = function (title, body = '', view = null, params = null) {
+App.sysNotify = function (title, body = '', view = null, params = null, tag = null) {
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  const opts = { body, tag: title + body, lang: 'ar', dir: 'rtl', icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', data: { view, params } };
+  const opts = { body, tag: tag || title + body, lang: 'ar', dir: 'rtl', icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', data: { view, params } };
   const direct = () => {
     try {
       const n = new Notification(title, opts);

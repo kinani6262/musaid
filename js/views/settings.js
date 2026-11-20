@@ -56,7 +56,15 @@ App.views.settings = {
               perm === 'default' ? `<button class="btn btn-sm btn-soft" data-act="ask-notify">السماح</button>` : perm === 'granted' ? `<button class="btn btn-sm btn-ghost" data-act="test-notify">تجربة</button>` : '')}
             ${row('التنبيه قبل وقت المهمة بـ', 'بالدقائق', num('notifyMinutes', st.notifyMinutes, 0, 120))}
             ${row('صوت التنبيه', '', sw('sound', st.sound))}
-            <div class="tiny muted mt-s">ℹ️ تعمل التنبيهات ما دام التطبيق مفتوحًا. لتنبيهات على هاتفك حتى والتطبيق مغلق، استعمل «الربط مع الهاتف» بالأسفل.</div>
+            ${Push.cfg() ? row('التنبيه والتطبيق مغلق',
+              Push._on ? '✅ مفعّل على هذا الجهاز — تصلك التذكيرات ولو أغلقت التطبيق'
+                : Push.iosNeedsInstall() ? 'في الآيفون: أضف التطبيق إلى الشاشة الرئيسية (زر المشاركة ← إضافة إلى الشاشة الرئيسية)، ثم افتحه من هناك وفعّله'
+                : !Push.supported() ? 'غير مدعوم في هذا المتصفح'
+                : perm === 'denied' ? '⛔ الإشعارات محظورة — اسمح بها من إعدادات الهاتف أو المتصفح ثم عد إلى هنا'
+                : 'فعّله على كل جهاز تريد أن تصله التذكيرات',
+              Push._on ? `<div class="flex" style="gap:6px"><button class="btn btn-sm btn-ghost" data-act="push-test">تجربة</button><button class="btn btn-sm btn-ghost" data-act="push-disable">إيقاف</button></div>`
+                : Push.supported() && !Push.iosNeedsInstall() && perm !== 'denied' ? `<button class="btn btn-sm btn-primary" data-act="push-enable">تفعيل</button>` : '')
+              : `<div class="tiny muted mt-s">ℹ️ تعمل التنبيهات ما دام التطبيق مفتوحًا. لتنبيهات على هاتفك حتى والتطبيق مغلق، استعمل «الربط مع الهاتف» بالأسفل.</div>`}
           </div>
 
           ${App.sync.cardHtml()}

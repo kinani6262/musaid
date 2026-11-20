@@ -2,3 +2,8 @@
 serve.ps1
 *.bat
 musaid-restore*.json
+push-server/*.local.json
+push-server/.wrangler/
+push-server/node_modules/
+push-server/.dev.vars
+push-server/*.local.txt

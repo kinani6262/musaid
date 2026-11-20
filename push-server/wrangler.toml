@@ -1,0 +1,16 @@
+name = "musaid-push"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+[vars]
+VAPID_SUBJECT = "https://kinani6262.github.io/musaid/"
+ALLOWED_ORIGINS = "https://kinani6262.github.io,http://localhost:8765"
+VAPID_PUBLIC = "BNEAPXcneGVU0srHcfE1qNOvfgm7kcsmnvfr5NPq9UWieGL-eBvC8INHmKQVoCSCUldrTskbk1A3pYO_ALU2z2Y"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "musaid-push"
+database_id = ""    # يُملأ من ناتج: npx wrangler d1 create musaid-push
+
+[triggers]
+crons = ["* * * * *"]

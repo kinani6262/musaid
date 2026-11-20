@@ -43,39 +43,32 @@ App.views.dashboard = {
       <div class="hero">
         <div class="flex between flex-wrap" style="align-items:flex-start">
           <div>
-            <h2>${greet}${S().name ? '، ' + esc(S().name) : ''} 👋</h2>
+            <h2>${greet}${S().name ? '، ' + esc(S().name) : ''}</h2>
             <div class="hdate">${D.fmt(today)}${S().showHijri ? ' · ' + D.hijri(today) : ''}</div>
           </div>
-          <button class="btn btn-sm" style="background:rgba(255,255,255,.18);border:0;color:#fff" data-act="quick-add">${ic('plus')} إضافة سريعة</button>
+          <button class="btn btn-sm hide-mobile" style="background:rgba(255,255,255,.18);border:0;color:#fff" data-act="quick-add">${ic('plus')} إضافة سريعة</button>
         </div>
         <div class="quote" data-act="next-quote" style="cursor:pointer" title="اضغط لحكمة أخرى">«${esc(q.t)}»<small>— ${esc(q.s)}</small></div>
-        <div class="hstats">
-          <span class="hs">📋 المهام <b>${st.done}/${st.total}</b></span>
-          <span class="hs">🔥 العادات <b>${habitsDone}/${habitsDue.length}</b></span>
-          ${np ? `<span class="hs">🕌 ${np.name} بعد <b>${durText(np.inMin)}</b></span>` : ''}
-          <span class="hs">💸 مصروف الشهر <b>${money(spent)}</b></span>
-        </div>
       </div>`;
 
+    // ملخص اليوم: ثلاثة أرقام فقط، ولكل منها بطاقته المفصّلة في الأسفل أو في قسمه
     const stats = `
-      <div class="grid g-4 keep-2 mt">
+      <div class="grid g-3 sum-row mt">
         <div class="card stat" data-act="go" data-view="day" style="cursor:pointer">
-          ${App.ring(st.pct, { size: 54, stroke: 6, label: st.pct + '%', color: 'var(--ac)' })}
-          <div><div class="sv">${st.done}<span class="muted small"> / ${st.total}</span></div><div class="sl">مهام اليوم</div></div>
+          ${App.ring(st.pct, { size: 46, stroke: 5, label: '', color: 'var(--ac)' })}
+          <div><div class="sv">${st.done}<span class="muted small"> / ${st.total}</span></div><div class="sl">المهام</div></div>
         </div>
         <div class="card stat" data-act="go" data-view="habits" style="cursor:pointer">
-          ${App.ring(pct(habitsDone, habitsDue.length), { size: 54, stroke: 6, label: pct(habitsDone, habitsDue.length) + '%', color: '#f97316' })}
-          <div><div class="sv">${habitsDone}<span class="muted small"> / ${habitsDue.length}</span></div><div class="sl">عادات اليوم</div></div>
+          ${App.ring(pct(habitsDone, habitsDue.length), { size: 46, stroke: 5, label: '', color: 'var(--ac)' })}
+          <div><div class="sv">${habitsDone}<span class="muted small"> / ${habitsDue.length}</span></div><div class="sl">العادات</div></div>
         </div>
-        <div class="card stat" data-act="go" data-view="finance" style="cursor:pointer">
-          <div class="si" style="--c:#22c55e">💰</div>
-          <div class="grow"><div class="sv">${money(spent, false)}</div><div class="sl">مصروف ${MONTHS[now.getMonth()]}${budget ? ` من ${money(budget, false)}` : ''}</div>
-          ${budget ? App.bar(pct(spent, budget), pct(spent, budget) >= 100 ? 'var(--bad)' : pct(spent, budget) >= 80 ? 'var(--warn)' : 'var(--good)', 'thin') : `<div class="tiny ${income - spent >= 0 ? 'good' : 'bad'}">الصافي ${money(income - spent)}</div>`}</div>
-        </div>
-        <div class="card stat" data-act="go" data-view="study" style="cursor:pointer">
-          <div class="si" style="--c:#a855f7">🎓</div>
-          <div><div class="sv">${hoursText(studyMin)} <span class="small muted">ساعة</span></div><div class="sl">دراسة هذا الأسبوع</div></div>
-        </div>
+        ${np ? `<div class="card stat">
+          <div class="si">${ic('clock')}</div>
+          <div><div class="sv">${durText(np.inMin)}</div><div class="sl">حتى ${np.name}</div></div>
+        </div>` : `<div class="card stat" data-act="go" data-view="finance" style="cursor:pointer">
+          <div class="si">${ic('wallet')}</div>
+          <div class="grow"><div class="sv">${money(spent, false)}</div><div class="sl">مصروف ${MONTHS[now.getMonth()]}${budget ? ` من ${money(budget, false)}` : ''}</div></div>
+        </div>`}
       </div>`;
 
     // مهام اليوم
@@ -84,7 +77,7 @@ App.views.dashboard = {
     const tasksCard = `
       <div class="card">
         <div class="card-h">
-          <div class="card-t"><span class="ti" style="--c:#3b82f6">${ic('day')}</span> مهام اليوم</div>
+          <div class="card-t"><span class="ti">${ic('day')}</span> مهام اليوم</div>
           <div class="flex">
             <button class="btn btn-sm btn-ghost" data-act="go" data-view="day">عرض الجدول</button>
             <button class="btn btn-sm btn-soft" data-act="task-new" data-date="${today}">${ic('plus')} مهمة</button>
@@ -99,7 +92,7 @@ App.views.dashboard = {
     const habitsCard = `
       <div class="card">
         <div class="card-h">
-          <div class="card-t"><span class="ti" style="--c:#f97316">${ic('flame')}</span> عادات اليوم</div>
+          <div class="card-t"><span class="ti">${ic('flame')}</span> عادات اليوم</div>
           <button class="btn btn-sm btn-ghost" data-act="go" data-view="habits">إدارة العادات</button>
         </div>
         ${habitsDue.length ? `<div class="grid g-auto-s" style="gap:8px">${habitsDue.map(hb => {
@@ -115,7 +108,7 @@ App.views.dashboard = {
     const trackersCard = trk.length ? `
       <div class="card">
         <div class="card-h">
-          <div class="card-t"><span class="ti" style="--c:#10b981">${ic('tracker')}</span> المتابعة اليومية</div>
+          <div class="card-t"><span class="ti">${ic('tracker')}</span> المتابعة اليومية</div>
           <button class="btn btn-sm btn-ghost" data-act="go" data-view="trackers">كل المتابعات</button>
         </div>
         <div class="col" style="gap:12px">${trk.map(t => {
@@ -142,11 +135,10 @@ App.views.dashboard = {
       prayerCard = `
         <div class="card">
           <div class="card-h">
-            <div class="card-t"><span class="ti" style="--c:#14b8a6">🕌</span> مواقيت الصلاة</div>
-            <span class="tiny muted" data-act="go" data-view="settings" style="cursor:pointer">${esc(Prayer.cityName())} ⚙️</span>
+            <div class="card-t"><span class="ti">${ic('clock')}</span> مواقيت الصلاة</div>
+            <span class="tiny muted" data-act="go" data-view="settings" style="cursor:pointer">${esc(Prayer.cityName())}</span>
           </div>
           <div class="prayers">${list.map(p => `<div class="pr ${np && np.id === p.id && np.day === today ? 'next' : ''} ${p.min < nowM ? 'passed' : ''}"><div class="pn">${p.name}</div><div class="pt">${p.time ? (([t, suf]) => t + (suf ? `<br><span class="tiny">${suf}</span>` : ''))(D.time(p.time).split(' ')) : '—'}</div></div>`).join('')}</div>
-          ${np ? `<div class="mt-s small text-2" style="text-align:center">الصلاة القادمة: <b>${np.name}</b> بعد <b>${durText(np.inMin)}</b></div>` : ''}
         </div>`;
     }
 
@@ -159,13 +151,13 @@ App.views.dashboard = {
     const upCard = `
       <div class="card">
         <div class="card-h">
-          <div class="card-t"><span class="ti" style="--c:#6366f1">${ic('calendar')}</span> القادم خلال أسبوعين</div>
+          <div class="card-t"><span class="ti">${ic('calendar')}</span> القادم خلال أسبوعين</div>
           <button class="btn btn-sm btn-ghost" data-act="go" data-view="calendar">التقويم</button>
         </div>
         ${upcoming.length ? upcoming.slice(0, 7).map(e => `
           <div class="agenda-item" style="--c:${e.color}" ${e.open ? `data-act="${e.open}" data-id="${e.id}"` : ''}>
             <div class="ad"><b>${D.day(e.date)}</b><small>${D.dayShort(e.date)}</small></div>
-            <div class="grow"><div class="bold small ellipsis">${e.icon} ${esc(e.title)}</div><div class="tiny muted">${D.rel(e.date)}${e.time ? ' · ' + D.time(e.time) : ''}${e.remind ? ' · 🔔 تذكير قبل يوم' : ''}</div></div>
+            <div class="grow"><div class="bold small ellipsis">${esc(e.title)}</div><div class="tiny muted">${D.rel(e.date)}${e.time ? ' · ' + D.time(e.time) : ''}</div></div>
           </div>`).join('') : App.empty('🗓️', 'لا مواعيد قادمة', 'أضف مواعيدك المستقبلية من التقويم')}
       </div>`;
 
@@ -174,7 +166,7 @@ App.views.dashboard = {
     const waterCard = `
       <div class="card">
         <div class="card-h">
-          <div class="card-t"><span class="ti" style="--c:var(--info)">${ic('drop')}</span> شرب الماء</div>
+          <div class="card-t"><span class="ti">${ic('drop')}</span> شرب الماء</div>
           <span class="small muted">${hl.water || 0} / ${S().waterGoal} أكواب</span>
         </div>
         <div class="glasses">${Array.from({ length: S().waterGoal }, (_, i) => `<button class="glass ${i < (hl.water || 0) ? 'on' : ''}" data-act="water-set" data-n="${i + 1}" aria-label="كوب ${i + 1}"></button>`).join('')}</div>
@@ -184,7 +176,7 @@ App.views.dashboard = {
     const insightsCard = `
       <div class="card">
         <div class="card-h"><div class="card-t"><span class="ti">${ic('sparkles')}</span> اقتراحات ذكية</div></div>
-        ${insights.slice(0, 6).map(App.insightHtml).join('')}
+        ${insights.slice(0, 3).map(App.insightHtml).join('')}
       </div>`;
 
     return `${hero}${stats}

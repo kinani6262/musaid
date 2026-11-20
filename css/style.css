@@ -2,9 +2,20 @@
    مُساعِد — منظّم الحياة
    ========================================================= */
 
+/* خط المراعي مُضمَّن في التطبيق، فيظهر كما هو دون إنترنت.
+   للخط أوزان 300 و400 و700 و800 فقط، فتُربط بها الأوزان الوسطى */
+@font-face { font-family: 'Almarai'; font-style: normal; font-display: swap; font-weight: 300; src: url(../fonts/almarai-arabic-300.woff2) format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
+@font-face { font-family: 'Almarai'; font-style: normal; font-display: swap; font-weight: 300; src: url(../fonts/almarai-latin-300.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: 'Almarai'; font-style: normal; font-display: swap; font-weight: 400 500; src: url(../fonts/almarai-arabic-400.woff2) format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
+@font-face { font-family: 'Almarai'; font-style: normal; font-display: swap; font-weight: 400 500; src: url(../fonts/almarai-latin-400.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: 'Almarai'; font-style: normal; font-display: swap; font-weight: 600 700; src: url(../fonts/almarai-arabic-700.woff2) format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
+@font-face { font-family: 'Almarai'; font-style: normal; font-display: swap; font-weight: 600 700; src: url(../fonts/almarai-latin-700.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+@font-face { font-family: 'Almarai'; font-style: normal; font-display: swap; font-weight: 800 900; src: url(../fonts/almarai-arabic-800.woff2) format('woff2'); unicode-range: U+0600-06FF,U+0750-077F,U+0870-088E,U+0890-0891,U+0898-08E1,U+08E3-08FF,U+200C-200E,U+2010-2011,U+204F,U+2E41,U+FB50-FDFF,U+FE70-FE74,U+FE76-FEFC; }
+@font-face { font-family: 'Almarai'; font-style: normal; font-display: swap; font-weight: 800 900; src: url(../fonts/almarai-latin-800.woff2) format('woff2'); unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD; }
+
 :root {
-  --font: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, system-ui, sans-serif;
-  --font-d: 'Readex Pro', 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font: 'Almarai', 'Segoe UI', Tahoma, system-ui, sans-serif;
+  --font-d: var(--font);
   --r-sm: 10px;
   --r: 14px;
   --r-lg: 20px;
@@ -179,17 +190,18 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .nav-item .ni {
   width: 32px; height: 32px; border-radius: 10px;
   display: grid; place-items: center;
-  background: color-mix(in srgb, var(--c) 15%, transparent);
-  color: var(--c);
+  background: var(--surface-2);
+  color: var(--muted);
   transition: transform .2s var(--ease);
 }
 .nav-item .ni .ic { width: 17px; height: 17px; }
 .nav-item:hover { background: var(--hover); color: var(--text); }
 .nav-item:hover .ni { transform: scale(1.06); }
 .nav-item.on { background: var(--surface-2); color: var(--text); box-shadow: var(--shadow-sm); }
+.nav-item.on .ni { background: var(--ac-soft); color: var(--ac); }
 .nav-item.on::before {
   content: ''; position: absolute; inset-inline-start: -14px; top: 10px; bottom: 10px;
-  width: 4px; border-radius: 0 4px 4px 0; background: var(--c);
+  width: 4px; border-radius: 0 4px 4px 0; background: var(--ac);
 }
 .nav-item .nb { margin-inline-start: auto; }
 .sidebar-foot { margin-top: auto; padding-top: 14px; }
@@ -279,7 +291,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .card-t { font-family: var(--font-d); font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
 .card-t .ti {
   width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
-  background: color-mix(in srgb, var(--c, var(--ac)) 15%, transparent); color: var(--c, var(--ac));
+  background: var(--ac-soft); color: var(--ac);
 }
 .card-t .ti .ic { width: 16px; height: 16px; }
 .grid { display: grid; gap: 16px; }
@@ -301,7 +313,7 @@ input, select, textarea { font-family: inherit; font-size: inherit; color: inher
 .stat { display: flex; align-items: center; gap: 14px; }
 .stat .si {
   width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; flex: none;
-  background: color-mix(in srgb, var(--c, var(--ac)) 15%, transparent); color: var(--c, var(--ac)); font-size: 1.3rem;
+  background: var(--ac-soft); color: var(--ac); font-size: 1.3rem;
 }
 .stat .sv { font-family: var(--font-d); font-size: 1.45rem; font-weight: 600; line-height: 1.2; }
 .stat .sl { color: var(--muted); font-size: .8rem; }
@@ -482,8 +494,13 @@ input[type=date], input[type=time] { direction: rtl; }
 .trow:hover { background: var(--hover); }
 .trow .tt { flex: 1; min-width: 0; cursor: pointer; }
 .trow .tt .tn { font-weight: 500; }
-.trow .tt .tm { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 2px; font-size: .76rem; color: var(--muted); }
+.trow .tt .tm { display: flex; gap: 6px 7px; flex-wrap: wrap; align-items: center; margin-top: 2px; font-size: .76rem; color: var(--muted); }
 .trow.done .tn { text-decoration: line-through; color: var(--muted); }
+.trow .tm i { font-style: normal; opacity: .5; }
+.tcat { display: inline-flex; align-items: center; gap: 5px; }
+.tcat::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.pri-high-t { color: var(--bad); }
+.stat .si .ic { width: 22px; height: 22px; }
 .trow .tacts { display: flex; gap: 2px; opacity: 0; transition: opacity .15s; }
 .trow:hover .tacts { opacity: 1; }
 .tchip {
@@ -1029,7 +1046,11 @@ input[type=date], input[type=time] { direction: rtl; }
   .cal-d .ev-dots { display: flex; }
   .cal { gap: 4px; }
   .prayers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .trow .tacts { opacity: 1; }
+  .trow .tacts { display: none; }
+  .grid.sum-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .sum-row .stat { flex-direction: column; gap: 6px; text-align: center; padding: 12px 6px; }
+  .sum-row .stat .si { width: 46px; height: 46px; }
+  .sum-row .stat .sv { font-size: 1.05rem; }
   .feature-list { grid-template-columns: 1fr; }
   .top-date { display: none; }
   .timer-time { font-size: 2.8rem; }
