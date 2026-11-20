@@ -7,3 +7,4 @@ push-server/.wrangler/
 push-server/node_modules/
 push-server/.dev.vars
 push-server/*.local.txt
+معاينات/
